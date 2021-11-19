@@ -1,11 +1,12 @@
 /**
- * Game Name
+ * Game Name: Dungeon Descent
  *
- * Authors
+ * Author: Jordan McIntyre
  *
- * Brief description
+ * Brief description:
  *
- * Asset sources
+ * Asset sources: 
+ * art: https://0x72.itch.io/dungeontileset-ii
  */
 
 import GameStateName from "./enums/GameStateName.js";
@@ -19,10 +20,10 @@ import {
 	sounds,
 	stateMachine,
 } from "./globals.js";
-import PlayState from "./states/PlayState.js";
-import GameOverState from "./states/GameOverState.js";
-import VictoryState from "./states/VictoryState.js";
-import TitleScreenState from "./states/TitleScreenState.js";
+import PlayState from "./states/game/PlayState.js";
+import GameOverState from "./states/game/GameOverState.js";
+import VictoryState from "./states/game/VictoryState.js";
+import TitleScreenState from "./states/game/TitleScreenState.js";
 
 // Fetch the asset definitions from config.json.
 const {
@@ -43,7 +44,7 @@ stateMachine.add(GameStateName.GameOver, new GameOverState());
 stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
 
-stateMachine.change(GameStateName.Play);
+stateMachine.change(GameStateName.TitleScreen);
 
 // Add event listeners for player input.
 canvas.addEventListener('keydown', event => {
@@ -53,6 +54,8 @@ canvas.addEventListener('keydown', event => {
 canvas.addEventListener('keyup', event => {
 	keys[event.key] = false;
 });
+
+context.imageSmoothingEnabled = false;
 
 const game = new Game(stateMachine, context, canvas.width, canvas.height);
 

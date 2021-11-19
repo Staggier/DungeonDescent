@@ -9,6 +9,7 @@ export const context = canvas.getContext('2d');
 
 export const CANVAS_WIDTH = canvas.width;
 export const CANVAS_HEIGHT = canvas.height;
+export const CANVAS_SCALE = 3;
 
 export const keys = {};
 export const images = new Images(context);
