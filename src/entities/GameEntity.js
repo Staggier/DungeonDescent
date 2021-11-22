@@ -11,7 +11,7 @@ export default class GameEntity {
         this.stateMachine = null;
         this.faceDirection = Direction.Right;
         this.direction = Direction.Right;
-        this.velocity = new Vector(0, 0)
+        this.velocity = new Vector(0, 0);
         this.isDead = false;
     }
 

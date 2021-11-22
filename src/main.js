@@ -24,6 +24,7 @@ import PlayState from "./states/game/PlayState.js";
 import GameOverState from "./states/game/GameOverState.js";
 import VictoryState from "./states/game/VictoryState.js";
 import TitleScreenState from "./states/game/TitleScreenState.js";
+import CharacterSelectState from "./states/game/CharacterSelectState.js";
 
 // Fetch the asset definitions from config.json.
 const {
@@ -43,6 +44,7 @@ stateMachine.add(GameStateName.TitleScreen, new TitleScreenState());
 stateMachine.add(GameStateName.GameOver, new GameOverState());
 stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
+stateMachine.add(GameStateName.CharacterSelect, new CharacterSelectState({}));
 
 stateMachine.change(GameStateName.TitleScreen);
 

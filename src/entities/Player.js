@@ -5,6 +5,7 @@ import PlayerType from "../enums/PlayerSpriteType.js";
 import PlayerStateName from "../enums/PlayerStateName.js";
 import { images } from "../globals.js";
 import PlayerIdlingState from "../states/entity/Player/PlayerIdlingState.js";
+import PlayerWalkingState from "../states/entity/Player/PlayerWalkingState.js";
 import GameEntity from "./GameEntity.js";
 
 export default class Player extends GameEntity {
@@ -21,6 +22,7 @@ export default class Player extends GameEntity {
 
         this.stateMachine = new StateMachine();
         this.stateMachine.add(PlayerStateName.Idling, new PlayerIdlingState(this));
+        this.stateMachine.add(PlayerStateName.Walking, new PlayerWalkingState(this));
 
         this.changeState(PlayerStateName.Idling);
 

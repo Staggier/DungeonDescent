@@ -1,5 +1,6 @@
 const PlayerStateName = {
-    Idling: "idling"
+    Idling: "idling",
+    Walking: "walking"
 };
 
 export default PlayerStateName;

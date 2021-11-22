@@ -35,8 +35,6 @@ export default class TitleScreenState extends State {
 		];
 
 		this.backgroundTiles = this.getBackgroundTiles();
-
-		console.log(this.backgroundTiles);
 	}
 
 	update(dt) {
@@ -47,7 +45,7 @@ export default class TitleScreenState extends State {
 		}
 		else if (keys.Enter) {
 			if (this.highlighted == this.menuOptions.start) {
-				stateMachine.change(GameStateName.Play);
+				stateMachine.change(GameStateName.CharacterSelect, {backgroundTiles: this.backgroundTiles, characters: this.entities});
 			}
 		}
 
@@ -91,14 +89,13 @@ export default class TitleScreenState extends State {
 			tiles.push([]);
 			for (let j = 0; j < CANVAS_WIDTH / Tile.SIZE; j++) {
 				tiles[i].push(new Tile(
-					new Vector(j * Tile.SIZE * CANVAS_SCALE, i * Tile.SIZE * CANVAS_SCALE),
+					new Vector(j * Tile.SIZE * CANVAS_SCALE * 2, i * Tile.SIZE * CANVAS_SCALE * 2),
 					new Vector(Tile.SIZE, Tile.SIZE),
 					sprites[getRandomPositiveInteger(0, 2)]
 				));
 			}
 		}
 
-		console.log(tiles[0][0]);
 		return tiles;
 	}
 }

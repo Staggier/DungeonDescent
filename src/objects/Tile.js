@@ -17,7 +17,7 @@ export default class Tile {
     render() {
         context.save();
         context.translate(this.position.x, this.position.y);
-        context.scale(CANVAS_SCALE, CANVAS_SCALE);
+        context.scale(CANVAS_SCALE * 2, CANVAS_SCALE * 2);
 
         this.sprite.render(0, 0);
         context.restore();
