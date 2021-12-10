@@ -1,5 +1,5 @@
 import State from "../../../lib/State.js";
-import Player from "../../entities/Player.js";
+import Player from "../../entities/players/Player.js";
 import GameStateName from "../../enums/GameStateName.js";
 import PlayerStateName from "../../enums/PlayerStateName.js";
 import { keys, stateMachine } from "../../globals.js";
@@ -21,6 +21,7 @@ export default class CharacterSelectState extends State {
     update(dt) {
         if (keys.Enter) {
             keys.Enter = false;
+            this.choice.canMove = true;
             
             stateMachine.change(GameStateName.Play, {
                 player: this.choice
@@ -33,7 +34,6 @@ export default class CharacterSelectState extends State {
             this.choice.stateMachine.change(PlayerStateName.Idling);
             this.index = (this.index + 1) % this.charLength;
             this.choice = this.characters[this.index];
-            console.log(this.choice);
             this.choice.stateMachine.change(PlayerStateName.Walking);
         }
         else if (keys.a) {
@@ -41,7 +41,6 @@ export default class CharacterSelectState extends State {
 
             this.choice.stateMachine.change(PlayerStateName.Idling);
             this.index -= this.index == -0 ? -this.charLength + 1: 1;
-            console.log(this.index);
             this.choice = this.characters[this.index];
             this.choice.stateMachine.change(PlayerStateName.Walking);
         }      

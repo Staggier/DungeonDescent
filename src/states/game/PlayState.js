@@ -4,19 +4,17 @@ import { context } from "../../globals.js";
 export default class PlayState extends State {
 	constructor() {
 		super();
-
-		this.enter();
 	}
 
-	enter() {
-
+	enter(params) {
+		this.player = params.player;
 	}
 
-	update (dt) {
-
+	update(dt) {
+		this.player.update(dt);
 	}
 
 	render() {
-
+		this.player.render();
 	}
 }
