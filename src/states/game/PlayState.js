@@ -1,5 +1,6 @@
 import State from "../../../lib/State.js";
 import { context } from "../../globals.js";
+import Room from "../../objects/Room.js";
 
 export default class PlayState extends State {
 	constructor() {
@@ -8,15 +9,15 @@ export default class PlayState extends State {
 
 	enter(params) {
 		this.player = params.player;
-		this.backgroundTiles = params.backgroundTiles;
+		this.room = params.room;
 	}
 
 	update(dt) {  
-		this.player.update(dt);
+		this.room.update(dt);
 	}
 
 	render() {
-		this.backgroundTiles.forEach(tiles => tiles.forEach(tile => tile.render()));
-		this.player.render();
+		this.room.render();
+		//this.player.render();
 	}
 }

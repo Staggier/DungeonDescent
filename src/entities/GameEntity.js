@@ -6,21 +6,20 @@ export default class GameEntity {
     constructor(dimensions, position) {
         this.dimensions = dimensions;
         this.position = position;
+        this.hitbox = null;
         this.sprites = null;
         this.currentAnimation = null;
         this.stateMachine = null;
         this.faceDirection = Direction.Right;
         this.direction = Direction.Right;
-        this.velocity = new Vector(0, 0);
         this.isDead = false;
         this.canMove = true;
-        this.renderPriority = 0;
+        this.renderPriority = 2;
     }
 
     update(dt) {
         this.stateMachine.update(dt);
         this.currentAnimation.update(dt);
-        this.position.add(this.velocity, dt);
     }
 
     render() {

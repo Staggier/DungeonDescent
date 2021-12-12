@@ -10,8 +10,8 @@ export default class GameObject {
         this.hitbox = new Hitbox(
             this.position.x,
             this.position.y,
-            this.dimensions.x,
-            this.dimensions.y
+            this.dimensions.x * CANVAS_SCALE,
+            this.dimensions.y * CANVAS_SCALE  
         );
 
         this.timer = new Timer();
@@ -40,8 +40,8 @@ export default class GameObject {
             return;
         }
 
-        this.stateMachine.render();
         this.renderObject();
+        this.stateMachine.render();
     }
 
     renderObject() {

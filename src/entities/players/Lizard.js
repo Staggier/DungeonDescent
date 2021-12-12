@@ -1,10 +1,13 @@
+import Hitbox from "../../../lib/Hitbox.js";
 import Sprite from "../../../lib/Sprite.js";
 import ImageName from "../../enums/ImageName.js";
-import { images } from "../../globals.js";
+import { CANVAS_SCALE, context, images } from "../../globals.js";
+import Tile from "../../objects/Tile.js";
 import Player from "./Player.js";
 
 export default class Lizard extends Player {
-    static SPEED = Player.WIDTH * 10;
+
+    static SPEED = Tile.SIZE * CANVAS_SCALE * 5;
     static STRENGTH = 1.0;
     static LUCK = 1.0;
 

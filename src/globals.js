@@ -11,6 +11,8 @@ export const CANVAS_WIDTH = canvas.width;
 export const CANVAS_HEIGHT = canvas.height;
 export const CANVAS_SCALE = 3;
 
+export const ROOM_OFFSET = 336;
+
 export const keys = {};
 export const images = new Images(context);
 export const fonts = new Fonts();

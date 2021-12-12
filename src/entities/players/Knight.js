@@ -1,10 +1,13 @@
+import Hitbox from "../../../lib/Hitbox.js";
 import Sprite from "../../../lib/Sprite.js";
 import ImageName from "../../enums/ImageName.js";
-import { images } from "../../globals.js";
+import { CANVAS_SCALE, images } from "../../globals.js";
+import Tile from "../../objects/Tile.js";
 import Player from "./Player.js";
 
 export default class Knight extends Player {
-    static SPEED = Player.WIDTH * 9;
+
+    static SPEED = Tile.SIZE * CANVAS_SCALE * 4;
     static STRENGTH = 2.0;
     static LUCK = 1.0;
 

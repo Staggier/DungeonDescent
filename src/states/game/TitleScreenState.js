@@ -120,15 +120,17 @@ export default class TitleScreenState extends State {
 	getBackgroundTiles() {
 		const tiles = [];
 
-		let sprites = Tile.generateWallSprites();
+		let tileSize = Tile.SIZE * CANVAS_SCALE;
 
-		for (let i = 0; i < CANVAS_HEIGHT / Tile.SIZE; i++) {
+		let sprites = Tile.generateFloorSprites();
+
+		for (let i = 0; i < CANVAS_HEIGHT / tileSize; i++) {
 			tiles.push([]);
-			for (let j = 0; j < CANVAS_WIDTH / Tile.SIZE; j++) {
+			for (let j = 0; j < CANVAS_WIDTH / tileSize; j++) {
 				tiles[i].push(new Tile(
-					new Vector(j * Tile.SIZE * CANVAS_SCALE * 2 + 350, i * Tile.SIZE * CANVAS_SCALE * 2),
+					new Vector(j * tileSize, i * tileSize),
 					new Vector(Tile.SIZE, Tile.SIZE),
-					sprites[getRandomPositiveInteger(0, 2)]
+					sprites[getRandomPositiveInteger(0, Tile.NUM_FLOOR_SPRITES - 1)]
 				));
 			}
 		}
