@@ -24,7 +24,7 @@ export default class PlayerAttackingState extends State {
 
             if (this.player.currentAnimation.isDone()) {
                 this.player.currentAnimation.refresh();
-                this.player.stateMachine.change(PlayerStateName.Idling);
+                this.player.changeState(PlayerStateName.Idling);
             }
         }
     }

@@ -24,7 +24,8 @@ export default class CharacterSelectState extends State {
             this.choice.canMove = true;
             
             stateMachine.change(GameStateName.Play, {
-                player: this.choice
+                player: this.choice,
+                backgroundTiles: this.backgroundTiles
             });
         }
 

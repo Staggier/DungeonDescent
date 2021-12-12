@@ -13,6 +13,8 @@ export default class GameEntity {
         this.direction = Direction.Right;
         this.velocity = new Vector(0, 0);
         this.isDead = false;
+        this.canMove = true;
+        this.renderPriority = 0;
     }
 
     update(dt) {

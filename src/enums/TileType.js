@@ -3,3 +3,5 @@ const TileType = {
     WALL_2 = "wall_2",
     WALL_3 = "Wall_3",
 }
+
+export default TileType;

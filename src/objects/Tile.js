@@ -7,6 +7,7 @@ export default class Tile {
     static SIZE = 16;
     static NUM_WALL_SPRITES = 3;
     static NUM_BROKEN_WALL_SPRITES = 2;
+    static NUM_FLOOR_SPRITES = 3;
 
     constructor(position, dimensions, sprite) {
         this.position = position;
@@ -30,7 +31,23 @@ export default class Tile {
             sprites.push(new Sprite(
                 images.get(ImageName.SpriteSheet),
                 16 + (Tile.SIZE * i),
-                12,
+                66,
+                Tile.SIZE,
+                Tile.SIZE
+            ));
+        }
+
+        return sprites;
+    }
+
+    static generateFloorSprites() {
+        const sprites = [];
+
+        for (let i = 0; i < Tile.NUM_WALL_SPRITES; i++) {
+            sprites.push(new Sprite(
+                images.get(ImageName.SpriteSheet),
+                16 + (Tile.SIZE * i),
+                66,
                 Tile.SIZE,
                 Tile.SIZE
             ));

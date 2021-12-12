@@ -27,27 +27,27 @@ export default class PlayerIdlingState extends State {
     checkForMovement() {
         if (keys.w) {
             this.player.direction = Direction.Up;
-            this.player.stateMachine.change(PlayerStateName.Walking);
+            this.player.changeState(PlayerStateName.Walking);
         }
         else if (keys.s) {
             this.player.direction = Direction.Down;
-            this.player.stateMachine.change(PlayerStateName.Walking);
+            this.player.changeState(PlayerStateName.Walking);
         }
         if (keys.a) {
             this.player.faceDirection = Direction.Left;
             this.player.direction = Direction.Left;
-            this.player.stateMachine.change(PlayerStateName.Walking);
+            this.player.changeState(PlayerStateName.Walking);
         }
         else if (keys.d) {
             this.player.faceDirection = Direction.Right;
             this.player.direction = Direction.Right;
-            this.player.stateMachine.change(PlayerStateName.Walking);
+            this.player.changeState(PlayerStateName.Walking);
         }
     }
 
     checkForAttack() {
         if (keys.Enter || keys.Attack) {
-            this.player.stateMachine.change(PlayerStateName.Attacking);
+            this.player.changeState(PlayerStateName.Attacking);
         }
     }
 }

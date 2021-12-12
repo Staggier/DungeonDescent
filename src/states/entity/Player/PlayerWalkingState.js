@@ -64,7 +64,7 @@ export default class PlayerWalkingState extends State {
 
     checkForAttack() {
         if (keys.Enter || keys.Attack) {
-            this.player.stateMachine.change(PlayerStateName.Attacking);
+            this.player.changeState(PlayerStateName.Attacking);
         }
     }
 }

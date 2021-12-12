@@ -8,13 +8,15 @@ export default class PlayState extends State {
 
 	enter(params) {
 		this.player = params.player;
+		this.backgroundTiles = params.backgroundTiles;
 	}
 
-	update(dt) {
+	update(dt) {  
 		this.player.update(dt);
 	}
 
 	render() {
+		this.backgroundTiles.forEach(tiles => tiles.forEach(tile => tile.render()));
 		this.player.render();
 	}
 }

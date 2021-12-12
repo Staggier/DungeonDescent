@@ -17,6 +17,11 @@ import PlayerFactory from "../../entities/players/PlayerFactory.js";
 import EnemyFactory from "../../entities/enemies/EnemyFactory.js";
 import EnemyType from "../../enums/EnemyType.js";
 import Enemy from "../../entities/enemies/Enemy.js";
+import Chest from "../../objects/Chest.js";
+import Coin from "../../objects/Coin.js";
+import Lever from "../../objects/Lever.js";
+import Potion from "../../objects/Potion.js";
+import PotionColor from "../../enums/PotionColor.js";
 
 export default class TitleScreenState extends State {
 	constructor() {
@@ -45,6 +50,14 @@ export default class TitleScreenState extends State {
 			EnemyFactory.createInstance(EnemyType.BigZombie, new Vector(Enemy.LARGE_WIDTH, Enemy.LARGE_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 300, CANVAS_HEIGHT / 2)),
 		];
 
+		let position = new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 50);
+		// coin render offset x is 13
+		// potion is 3
+		
+		this.objects = [
+			new Chest(new Vector(Chest.WIDTH, Chest.HEIGHT), position, new Coin(new Vector(Coin.WIDTH, Coin.HEIGHT), new Vector(position.x + ((Chest.WIDTH + 13) / 2), position.y), PotionColor.Blue))
+		];
+
 		this.players.forEach(player => player.canMove = false);
 
 		this.backgroundTiles = this.getBackgroundTiles();
@@ -63,18 +76,24 @@ export default class TitleScreenState extends State {
 			if (this.highlighted == this.menuOptions.start) {
 				stateMachine.change(GameStateName.CharacterSelect, { backgroundTiles: this.backgroundTiles, characters: this.players });
 			}
+			else {
+				this.objects[0].wasConsumed = true;
+			}
 		}
 
 		this.players.forEach(player => player.update(dt));
 		this.enemies.forEach(enemy => enemy.update(dt));
+		this.objects.forEach(object => object.update(dt));
 	}
 
 	render() {
 		this.backgroundTiles.forEach(tiles => tiles.forEach(tile => tile.render()));
 		this.menuSelectionRender();
 		this.titlescreenRender();
+
 		this.players.forEach(player => player.render());
 		this.enemies.forEach(enemy => enemy.render());
+		this.objects.forEach(object => object.render());
 	}
 
 	titlescreenRender() {
@@ -107,7 +126,7 @@ export default class TitleScreenState extends State {
 			tiles.push([]);
 			for (let j = 0; j < CANVAS_WIDTH / Tile.SIZE; j++) {
 				tiles[i].push(new Tile(
-					new Vector(j * Tile.SIZE * CANVAS_SCALE * 2, i * Tile.SIZE * CANVAS_SCALE * 2),
+					new Vector(j * Tile.SIZE * CANVAS_SCALE * 2 + 350, i * Tile.SIZE * CANVAS_SCALE * 2),
 					new Vector(Tile.SIZE, Tile.SIZE),
 					sprites[getRandomPositiveInteger(0, 2)]
 				));
