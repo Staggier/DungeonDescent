@@ -3,7 +3,9 @@ const GameStateName = {
 	Play: 'play',
 	Victory: 'victory',
 	TitleScreen: 'titlescreen',
-	CharacterSelect: 'character-select'
+	CharacterSelect: 'character-select',
+	HighscoreState: 'highscore',
+	EnterHighscore: 'enter-highscore'
 };
 
 export default GameStateName;

@@ -24,6 +24,7 @@ export default class Lever extends GameObject {
         this.awaitingSprites = [sprites[0]];
         this.activatingSprites = [sprites[1]];
         this.sprites = this.awaitingSprites;
+        this.on = false;
     }
 
     static generateSprites() {

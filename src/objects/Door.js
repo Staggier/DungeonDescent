@@ -9,6 +9,7 @@ import { CANVAS_HEIGHT, CANVAS_SCALE, CANVAS_WIDTH, context, images, ROOM_OFFSET
 import DoorIdlingState from "../states/object/DoorIdlingState.js";
 import DoorRestingState from "../states/object/DoorRestingState.js";
 import GameObject from "./GameObject.js";
+import Tile from "./Tile.js";
 
 export default class Door extends GameObject {
 
@@ -18,8 +19,35 @@ export default class Door extends GameObject {
     static OPENED_HEIGHT = 32;
     static NUM_SPRITES = 2;
 
+    static NORTH_DOOR_X = CANVAS_WIDTH / 2 + 73;
+    static NORTH_DOOR_Y = 32;
+
+    static SOUTH_DOOR_X = CANVAS_WIDTH / 2 + 73;
+    static SOUTH_DOOR_Y = 560;
+
+    static EAST_DOOR_X = ROOM_OFFSET - 32;
+    static EAST_DOOR_Y = CANVAS_HEIGHT / 2;
+
+    static WEST_DOOR_X = CANVAS_WIDTH - 80;
+    static WEST_DOOR_Y = CANVAS_HEIGHT / 2;
+
     constructor(dimensions, position, direction) {
         super(dimensions, position);
+
+        switch (direction) {
+            case Direction.Down:
+                this.hitbox.set(this.position.x + 1, this.position.y + 1, (Tile.SIZE * CANVAS_SCALE) + 22, Tile.SIZE * CANVAS_SCALE + 14);
+                break;
+            case Direction.Left:
+                this.hitbox.set(this.position.x - 15, this.position.y - 15, (Tile.SIZE * CANVAS_SCALE) + 14, Tile.SIZE * CANVAS_SCALE + 22);
+                break;
+            case Direction.Right:
+                this.hitbox.set(this.position.x + 19, this.position.y - 21, (Tile.SIZE * CANVAS_SCALE) + 10, Tile.SIZE * CANVAS_SCALE + 22);
+                break;
+            case Direction.Up:
+                this.hitbox.set(this.position.x - 8, this.position.y - 30, (Tile.SIZE * CANVAS_SCALE) + 30, Tile.SIZE * CANVAS_SCALE + 12);
+                break;
+        }
 
         this.faceDirection = direction;
         this.idlingSprites = Door.generateClosedSprite();
@@ -89,20 +117,18 @@ export default class Door extends GameObject {
     }
 
     static generateNorthDoor() {
-        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 73, 32), Direction.Down);
+        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(Door.NORTH_DOOR_X, Door.NORTH_DOOR_Y), Direction.Down);
     }
 
     static generateSouthDoor() {
-        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 73, 560), Direction.Up);
+        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(Door.SOUTH_DOOR_X, Door.SOUTH_DOOR_Y), Direction.Up);
     }
 
     static generateEastDoor() {
-        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(ROOM_OFFSET - 32, CANVAS_HEIGHT / 2), Direction.Right);
+        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(Door.EAST_DOOR_X, Door.EAST_DOOR_Y), Direction.Right);
     }
 
     static generateWestDoor() {
-        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(CANVAS_WIDTH - 80, CANVAS_HEIGHT / 2), Direction.Left);
+        return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(Door.WEST_DOOR_X, Door.WEST_DOOR_Y), Direction.Left);
     }
-
-    
 }

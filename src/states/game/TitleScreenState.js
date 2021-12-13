@@ -6,7 +6,8 @@ import {
 	CANVAS_HEIGHT,
 	keys,
 	stateMachine,
-	CANVAS_SCALE
+	CANVAS_SCALE,
+	sounds
 } from "../../../src/globals.js";
 import Player from "../../entities/players/Player.js";
 import GameStateName from "../../enums/GameStateName.js";
@@ -22,6 +23,7 @@ import Coin from "../../objects/Coin.js";
 import Lever from "../../objects/Lever.js";
 import Potion from "../../objects/Potion.js";
 import PotionColor from "../../enums/PotionColor.js";
+import SoundName from "../../enums/SoundName.js";
 
 export default class TitleScreenState extends State {
 	constructor() {
@@ -29,12 +31,16 @@ export default class TitleScreenState extends State {
 	}
 
 	enter() {
+
+		sounds.get(SoundName.Music).play();
+
 		this.menuOptions = {
 			start: 'Start',
 			highscores: 'Highscores'
 		}
 
 		this.highlighted = this.menuOptions.start;
+
 		this.players = [
 			PlayerFactory.createInstance(PlayerType.Lizard, new Vector(Player.WIDTH, Player.HEIGHT), new Vector(CANVAS_WIDTH / 2 - (Player.WIDTH * 6), 200)),
 			PlayerFactory.createInstance(PlayerType.Wizard, new Vector(Player.WIDTH, Player.HEIGHT), new Vector(CANVAS_WIDTH / 2 - Player.WIDTH, 200)),
@@ -48,14 +54,6 @@ export default class TitleScreenState extends State {
 			EnemyFactory.createInstance(EnemyType.BigOrc, new Vector(Enemy.LARGE_WIDTH, Enemy.LARGE_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 100, CANVAS_HEIGHT / 2)),
 			EnemyFactory.createInstance(EnemyType.SmallZombie, new Vector(Enemy.SMALL_WIDTH, Enemy.SMALL_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 200, CANVAS_HEIGHT / 2)),
 			EnemyFactory.createInstance(EnemyType.BigZombie, new Vector(Enemy.LARGE_WIDTH, Enemy.LARGE_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 300, CANVAS_HEIGHT / 2)),
-		];
-
-		let position = new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 50);
-		// coin render offset x is 13
-		// potion is 3
-		
-		this.objects = [
-			new Chest(new Vector(Chest.WIDTH, Chest.HEIGHT), position, new Coin(new Vector(Coin.WIDTH, Coin.HEIGHT), new Vector(position.x + ((Chest.WIDTH + 13) / 2), position.y), PotionColor.Blue))
 		];
 
 		this.players.forEach(player => player.canMove = false);
@@ -77,13 +75,12 @@ export default class TitleScreenState extends State {
 				stateMachine.change(GameStateName.CharacterSelect, { backgroundTiles: this.backgroundTiles, characters: this.players });
 			}
 			else {
-				this.objects[0].wasConsumed = true;
+				stateMachine.change(GameStateName.HighscoreState, { backgroundTiles: this.backgroundTiles });
 			}
 		}
 
 		this.players.forEach(player => player.update(dt));
 		this.enemies.forEach(enemy => enemy.update(dt));
-		this.objects.forEach(object => object.update(dt));
 	}
 
 	render() {
@@ -93,7 +90,6 @@ export default class TitleScreenState extends State {
 
 		this.players.forEach(player => player.render());
 		this.enemies.forEach(enemy => enemy.render());
-		this.objects.forEach(object => object.render());
 	}
 
 	titlescreenRender() {

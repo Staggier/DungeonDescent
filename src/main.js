@@ -7,6 +7,12 @@
  *
  * Asset sources: 
  * art: https://0x72.itch.io/dungeontileset-ii
+ * 
+ * music: Adventure by Alexander Nakarada | https://www.serpentsoundstudios.com
+ * Music promoted by https://www.chosic.com/free-music/all/
+ * Attribution 4.0 International (CC BY 4.0)
+ * https://creativecommons.org/licenses/by/4.0/
+ 
  */
 
 import GameStateName from "./enums/GameStateName.js";
@@ -25,6 +31,8 @@ import GameOverState from "./states/game/GameOverState.js";
 import VictoryState from "./states/game/VictoryState.js";
 import TitleScreenState from "./states/game/TitleScreenState.js";
 import CharacterSelectState from "./states/game/CharacterSelectState.js";
+import HighscoreState from "./states/game/HighscoreState.js";
+import EnterHighscoreState from "./states/game/EnterHighscoreState.js";
 
 // Fetch the asset definitions from config.json.
 const {
@@ -44,7 +52,9 @@ stateMachine.add(GameStateName.TitleScreen, new TitleScreenState());
 stateMachine.add(GameStateName.GameOver, new GameOverState());
 stateMachine.add(GameStateName.Victory, new VictoryState());
 stateMachine.add(GameStateName.Play, new PlayState());
-stateMachine.add(GameStateName.CharacterSelect, new CharacterSelectState({}));
+stateMachine.add(GameStateName.CharacterSelect, new CharacterSelectState());
+stateMachine.add(GameStateName.HighscoreState, new HighscoreState());
+stateMachine.add(GameStateName.EnterHighscore, new EnterHighscoreState());
 
 stateMachine.change(GameStateName.TitleScreen);
 

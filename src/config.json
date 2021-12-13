@@ -14,6 +14,30 @@
 		}
 	],
 	"sounds": [
-		
+		{
+			"name": "music",
+			"path": "./assets/sounds/Adventure-320bit.mp3",
+			"size": 1,
+			"volume": 0.4,
+			"loop": true
+		},
+		{
+			"name": "door",
+			"path": "./assets/sounds/door.wav",
+			"size": 4,
+			"volume": 0.1
+		},
+		{
+			"name": "hit-enemy",
+			"path": "./assets/sounds/hit_enemy.wav",
+			"size": 1,
+			"volume": 0.1
+		},
+		{
+			"name": "hit-player",
+			"path": "./assets/sounds/hit_player.wav",
+			"size": 1,
+			"volume": 0.1
+		}
 	]
 }

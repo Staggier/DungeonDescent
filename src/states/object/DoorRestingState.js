@@ -14,6 +14,7 @@ export default class DoorRestingState extends State {
 
     enter() {
         this.door.currentAnimation = this.animation;
+        this.door.isClosed = false;
     }
 
     render() {

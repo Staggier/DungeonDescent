@@ -12,6 +12,7 @@ export default class LeverAwaitingState extends State {
     enter() {
         this.lever.currentAnimation = this.animation;
         this.lever.sprites = this.lever.awaitingSprites;
+        this.lever.on = false;
     }
 
     update(dt) {

@@ -5,6 +5,7 @@ import GameStateName from "../../enums/GameStateName.js";
 import PlayerStateName from "../../enums/PlayerStateName.js";
 import { keys, stateMachine } from "../../globals.js";
 import Door from "../../objects/Door.js";
+import DungeonFloor from "../../objects/DungeonFloor.js";
 import Room from "../../objects/Room.js";
 
 export default class CharacterSelectState extends State {
@@ -28,11 +29,8 @@ export default class CharacterSelectState extends State {
             
             stateMachine.change(GameStateName.Play, {
                 player: this.choice,
-                room: new Room(
-                    this.choice, 
-                    [Door.generateNorthDoor(), Door.generateSouthDoor(), Door.generateEastDoor(), Door.generateWestDoor()],
-                    EnemyType.SmallDemon
-                )
+                dungeonFloor: DungeonFloor.getFirstFloor(this.choice),
+                backgroundTiles: this.backgroundTiles
             });
         }
 

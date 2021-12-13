@@ -13,6 +13,8 @@ export default class GameEntity {
         this.faceDirection = Direction.Right;
         this.direction = Direction.Right;
         this.isDead = false;
+        this.cleanUp = false;
+        this.isInvincible = false;
         this.canMove = true;
         this.renderPriority = 2;
     }
@@ -23,7 +25,7 @@ export default class GameEntity {
     }
 
     render() {
-        if (this.isDead) {
+        if (this.isDead || this.cleanUp) {
             return;
         }
 

@@ -20,7 +20,7 @@ Upon entering rooms, a mini-map will begin to uncover itself as each room is vis
 
 After all rooms on the floor have been cleared, a button will appear in the current room and the player can press it to unlock the Boss' room. After defeating the boss players will be able to pick up a bonus item to further assist them in their battles, and traverse deeper into the dungeon.
 
-This game will be a singleplayer experience where players can control their character with WASD and Spacebar/Enter to attack/interact with the World.
+This game will be a singleplayer experience where players can control their character with WASD and Enter to attack/interact with the World.
 
 ## Requirements
 
@@ -29,22 +29,18 @@ This game will be a singleplayer experience where players can control their char
 3. The player shall select their character.
 4. The player shall be placed into a random room on the floor.
 5. The player shall continue forth to other rooms.
-6. The mini-map shall update as rooms are visited.
-7. The mini-map shall mark the Boss room's location when found.
-8. The player shall slay all enemies in each room.
-9. The player shall press a button upon clearing the last room to unlock the boss room.
-10. The player shall traverse to the Boss room.
+6. The player shall slay all enemies in each room.
+7. The player shall activate a lever upon clearing the last room to unlock the boss room.
+8. The player shall traverse to the Boss room.
 9. The player shall slay the Boss.
 10. The player shall pickup a bonus powerup.
-12. The user shall continue onto another floor.
-13. The user shall return to the leaderboard section of the Title screen upon winning/losing.
-14. The user shall enter their name (if required) and return to the Title Screen.
+11. The user shall continue onto another floor.
+12. The user shall return to the leaderboard section of the Title screen upon winning/losing.
+13. The user shall enter their name (if required) and return to the Title Screen.
 
 ### Implementation
 
 I want to experiment with generating floors with randomly connected rooms, for example one room may be connected to more rooms than another. The layout will be created before the floor is initalized and then it will create rooms based on that layout.
-
-I want to implement a mini-map that will track visited rooms and will mark the Boss' room when found.
 
 ### State Diagram
 

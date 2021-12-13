@@ -3,7 +3,7 @@ import StateMachine from "../../lib/StateMachine.js";
 import Timer from "../../lib/Timer.js";
 import ImageName from "../enums/ImageName.js";
 import ObjectStateName from "../enums/ObjectStateName.js";
-import { images } from "../globals.js";
+import { CANVAS_SCALE, context, images, timer } from "../globals.js";
 import ChestIdlingState from "../states/object/ChestIdlingState.js";
 import ChestOpeningState from "../states/object/ChestOpeningState.js";
 import ChestRestingState from "../states/object/ChestRestingState.js";
@@ -30,14 +30,18 @@ export default class Chest extends GameObject {
 
         this.sprites = this.idlingSprites;
 
-        this.timer = new Timer();
         this.item = item;
-        this.item.isVisible = false;
+        this.item.isVisible = false
+        this.isSolid = true;
+        this.isCollidable = true;
+        this.renderPriority = 2;
     }
 
     update(dt) {
         super.update(dt);
         this.item.update(dt);
+
+        this.hitbox.set(this.position.x, this.position.y + 5, Chest.WIDTH * CANVAS_SCALE, Chest.HEIGHT * CANVAS_SCALE - 5);
     }
 
     render() {
@@ -62,8 +66,14 @@ export default class Chest extends GameObject {
     }
 
     revealItem() {
+        if (this.wasConsumed) {
+            return;
+        }
+
+        this.wasConsumed = true;
         this.item.isVisible = true;
-        this.item.timer.tween(this.item.position, ["y"], [this.item.position.y - 25], 0.5, () => {
+
+        timer.tween(this.item.position, ["y"], [this.item.position.y - 30], 0.5, () => {
             this.changeState(ObjectStateName.ChestResting);
         });
     }

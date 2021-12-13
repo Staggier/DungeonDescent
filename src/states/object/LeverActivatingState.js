@@ -12,6 +12,7 @@ export default class LeverActivatingState extends State {
     enter() {
         this.lever.currentAnimation = this.animation;
         this.lever.sprites = this.lever.activatingSprites;
+        this.lever.on = true;
     }
 
     update(dt) {

@@ -10,8 +10,13 @@ import PlayerWalkingState from "../../states/entity/Player/PlayerWalkingState.js
 import GameEntity from "../GameEntity.js";
 import Hitbox from "../../../lib/Hitbox.js";
 import Direction from "../../enums/Direction.js";
+import Timer from "../../../lib/Timer.js";
 
 export default class Player extends GameEntity {
+
+    static ATTACK_FRAME = 4;
+
+    static DAMAGE = 0.5;
 
     static NUM_IDLING_SPRITES = 4;
     static NUM_WALKING_SPRITES = 4;
@@ -24,7 +29,7 @@ export default class Player extends GameEntity {
     static HITBOX_POSITION_X_OFFSET = 7;
     static HITBOX_POSITION_Y_OFFSET = 40;
     static HITBOX_WIDTH_OFFSET = 8;
-    static HITBOX_HEIGHT_OFFSET = 50;
+    static HITBOX_HEIGHT_OFFSET = 45;
 
     constructor(dimensions, position) {
         super(dimensions, position);
@@ -36,40 +41,37 @@ export default class Player extends GameEntity {
             Player.HEIGHT * CANVAS_SCALE - Player.HITBOX_HEIGHT_OFFSET
         );
 
+        this.kickHitbox = new Hitbox(0, 0, 0, 0, "blue");
+
         this.stateMachine = new StateMachine();
         this.stateMachine.add(PlayerStateName.Idling, new PlayerIdlingState(this));
         this.stateMachine.add(PlayerStateName.Walking, new PlayerWalkingState(this));
         this.stateMachine.add(PlayerStateName.Attacking, new PlayerAttackingState(this));
 
+        this.health = 5;
+
         this.changeState(PlayerStateName.Idling);
+
+        this.score = 0;
     }
 
     update(dt) {
         super.update(dt);
 
-        switch (this.faceDirection) {
-            case Direction.Left:
-                this.hitbox.set(
-                    this.position.x + Player.HITBOX_POSITION_X_OFFSET - Player.LEFT_FACING_X_OFFSET,
-                    this.position.y + Player.HITBOX_POSITION_Y_OFFSET,
-                    Player.WIDTH * CANVAS_SCALE - Player.HITBOX_WIDTH_OFFSET,
-                    Player.HEIGHT * CANVAS_SCALE - Player.HITBOX_HEIGHT_OFFSET
-                );
-                break;
-            case Direction.Right:
-                this.hitbox.set(
-                    this.position.x + Player.HITBOX_POSITION_X_OFFSET,
-                    this.position.y + Player.HITBOX_POSITION_Y_OFFSET,
-                    Player.WIDTH * CANVAS_SCALE - Player.HITBOX_WIDTH_OFFSET,
-                    Player.HEIGHT * CANVAS_SCALE - Player.HITBOX_HEIGHT_OFFSET
-                );
-                break;
-            
+        if (this.faceDirection == Direction.Left)
+            this.hitbox.set(
+                this.position.x + Player.HITBOX_POSITION_X_OFFSET - Player.LEFT_FACING_X_OFFSET,
+                this.position.y + Player.HITBOX_POSITION_Y_OFFSET,
+                Player.WIDTH * CANVAS_SCALE - Player.HITBOX_WIDTH_OFFSET,
+                Player.HEIGHT * CANVAS_SCALE - Player.HITBOX_HEIGHT_OFFSET
+            );
+        else {
+            this.hitbox.set(
+                this.position.x + Player.HITBOX_POSITION_X_OFFSET,
+                this.position.y + Player.HITBOX_POSITION_Y_OFFSET,
+                Player.WIDTH * CANVAS_SCALE - Player.HITBOX_WIDTH_OFFSET,
+                Player.HEIGHT * CANVAS_SCALE - Player.HITBOX_HEIGHT_OFFSET
+            );
         }
-    }
-    
-    render() {
-        super.render();
-        this.hitbox.render(context);
     }
 }

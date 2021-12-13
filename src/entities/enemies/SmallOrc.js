@@ -1,6 +1,8 @@
+import Hitbox from "../../../lib/Hitbox.js";
 import Sprite from "../../../lib/Sprite.js";
+import Direction from "../../enums/Direction.js";
 import ImageName from "../../enums/ImageName.js";
-import { images } from "../../globals.js";
+import { CANVAS_SCALE, images } from "../../globals.js";
 import Enemy from "./Enemy.js";
 
 export default class SmallOrc extends Enemy {
@@ -10,7 +12,19 @@ export default class SmallOrc extends Enemy {
         this.idlingSprites = SmallOrc.generateIdlingSprites();
         this.walkingSprites = SmallOrc.generateWalkingSprites();
 
+        this.health = 1;
         this.sprites = this.idlingSprites;
+    }
+
+    update(dt) {
+        super.update(dt);
+
+        if (this.faceDirection == Direction.Right) {
+            this.hitbox.set(this.position.x + 1, this.position.y + 20, Enemy.SMALL_WIDTH * CANVAS_SCALE - 12, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
+        }
+        else {
+            this.hitbox.set(this.position.x + 11, this.position.y + 20, Enemy.SMALL_WIDTH * CANVAS_SCALE - 12, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
+        }
     }
 
     static generateIdlingSprites() {

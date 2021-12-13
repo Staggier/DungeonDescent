@@ -1,6 +1,7 @@
 import Sprite from "../../../lib/Sprite.js";
+import Direction from "../../enums/Direction.js";
 import ImageName from "../../enums/ImageName.js";
-import { images } from "../../globals.js";
+import { CANVAS_SCALE, images } from "../../globals.js";
 import Enemy from "./Enemy.js";
 
 export default class BigZombie extends Enemy {
@@ -10,7 +11,19 @@ export default class BigZombie extends Enemy {
         this.idlingSprites = BigZombie.generateIdlingSprites();
         this.walkingSprites = BigZombie.generateWalkingSprites();
 
+        this.health = 2;
         this.sprites = this.idlingSprites;
+    }
+
+    update(dt) {
+        super.update(dt);
+
+        if (this.faceDirection == Direction.Right) {
+            this.hitbox.set(this.position.x + 5, this.position.y + 43, Enemy.LARGE_WIDTH * CANVAS_SCALE - 40, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 14);
+        }
+        else {
+            this.hitbox.set(this.position.x + 36, this.position.y + 43, Enemy.LARGE_WIDTH * CANVAS_SCALE - 42, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 14);
+        }
     }
 
     static generateIdlingSprites() {
