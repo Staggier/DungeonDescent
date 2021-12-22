@@ -1,16 +1,13 @@
-import Sprite from "../../../lib/Sprite.js";
 import StateMachine from "../../../lib/StateMachine.js";
-import ImageName from "../../enums/ImageName.js";
-import PlayerType from "../../enums/PlayerType.js";
 import PlayerStateName from "../../enums/PlayerStateName.js";
-import { CANVAS_SCALE, context, images } from "../../globals.js";
+import { CANVAS_SCALE } from "../../globals.js";
 import PlayerAttackingState from "../../states/entity/Player/PlayerAttackingState.js";
 import PlayerIdlingState from "../../states/entity/Player/PlayerIdlingState.js";
 import PlayerWalkingState from "../../states/entity/Player/PlayerWalkingState.js";
 import GameEntity from "../GameEntity.js";
 import Hitbox from "../../../lib/Hitbox.js";
 import Direction from "../../enums/Direction.js";
-import Timer from "../../../lib/Timer.js";
+import PlayerHurtingState from "../../states/entity/Player/PlayerHurtingState.js";
 
 export default class Player extends GameEntity {
 
@@ -47,8 +44,7 @@ export default class Player extends GameEntity {
         this.stateMachine.add(PlayerStateName.Idling, new PlayerIdlingState(this));
         this.stateMachine.add(PlayerStateName.Walking, new PlayerWalkingState(this));
         this.stateMachine.add(PlayerStateName.Attacking, new PlayerAttackingState(this));
-
-        this.health = 5;
+        this.stateMachine.add(PlayerStateName.Hurting, new PlayerHurtingState(this));
 
         this.changeState(PlayerStateName.Idling);
 

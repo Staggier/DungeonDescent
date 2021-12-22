@@ -46,7 +46,7 @@ export default class PlayerIdlingState extends State {
     }
 
     checkForAttack() {
-        if (keys.Enter || keys.Attack) {
+        if (keys.Enter) {
             this.player.changeState(PlayerStateName.Attacking);
         }
     }

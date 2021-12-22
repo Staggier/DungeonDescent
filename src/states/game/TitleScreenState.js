@@ -1,29 +1,14 @@
 import State from "../../../lib/State.js";
 import Vector from "../../../lib/Vector.js";
-import {
-	context,
-	CANVAS_WIDTH,
-	CANVAS_HEIGHT,
-	keys,
-	stateMachine,
-	CANVAS_SCALE,
-	sounds
-} from "../../../src/globals.js";
+import { context, CANVAS_WIDTH, CANVAS_HEIGHT, keys, stateMachine, sounds, TILE_SIZE, CANVAS_SCALE } from "../../../src/globals.js";
 import Player from "../../entities/players/Player.js";
 import GameStateName from "../../enums/GameStateName.js";
 import PlayerType from "../../enums/PlayerType.js";
-import Tile from "../../objects/Tile.js";
-import { getRandomPositiveInteger } from "../../../lib/RandomNumberHelpers.js";
 import PlayerFactory from "../../entities/players/PlayerFactory.js";
-import EnemyFactory from "../../entities/enemies/EnemyFactory.js";
-import EnemyType from "../../enums/EnemyType.js";
-import Enemy from "../../entities/enemies/Enemy.js";
-import Chest from "../../objects/Chest.js";
-import Coin from "../../objects/Coin.js";
-import Lever from "../../objects/Lever.js";
-import Potion from "../../objects/Potion.js";
-import PotionColor from "../../enums/PotionColor.js";
 import SoundName from "../../enums/SoundName.js";
+import UserInterface from "../../services/UserInterface.js";
+import Skull from "../../objects/Skull.js";
+import Direction from "../../enums/Direction.js";
 
 export default class TitleScreenState extends State {
 	constructor() {
@@ -47,18 +32,24 @@ export default class TitleScreenState extends State {
 			PlayerFactory.createInstance(PlayerType.Knight, new Vector(Player.WIDTH, Player.HEIGHT), new Vector(CANVAS_WIDTH / 2 + (Player.WIDTH * 4), 200)),
 		];
 
-		this.enemies = [
-			EnemyFactory.createInstance(EnemyType.SmallDemon, new Vector(Enemy.SMALL_WIDTH, Enemy.SMALL_HEIGHT), new Vector(CANVAS_WIDTH / 2 - 200, CANVAS_HEIGHT / 2)),
-			EnemyFactory.createInstance(EnemyType.BigDemon, new Vector(Enemy.LARGE_WIDTH, Enemy.LARGE_HEIGHT), new Vector(CANVAS_WIDTH / 2 - 100, CANVAS_HEIGHT / 2)),
-			EnemyFactory.createInstance(EnemyType.SmallOrc, new Vector(Enemy.SMALL_WIDTH, Enemy.SMALL_HEIGHT), new Vector(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)),
-			EnemyFactory.createInstance(EnemyType.BigOrc, new Vector(Enemy.LARGE_WIDTH, Enemy.LARGE_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 100, CANVAS_HEIGHT / 2)),
-			EnemyFactory.createInstance(EnemyType.SmallZombie, new Vector(Enemy.SMALL_WIDTH, Enemy.SMALL_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 200, CANVAS_HEIGHT / 2)),
-			EnemyFactory.createInstance(EnemyType.BigZombie, new Vector(Enemy.LARGE_WIDTH, Enemy.LARGE_HEIGHT), new Vector(CANVAS_WIDTH / 2 + 300, CANVAS_HEIGHT / 2)),
+		this.skulls = [
+			new Skull(new Vector(Skull.WIDTH, Skull.HEIGHT), new Vector(CANVAS_WIDTH / 2 - 125, CANVAS_HEIGHT / 2 + 25)),
+			new Skull(new Vector(Skull.WIDTH, Skull.HEIGHT), new Vector(CANVAS_WIDTH / 2 - 165, CANVAS_HEIGHT / 2 + 25)),
+			new Skull(new Vector(Skull.WIDTH, Skull.HEIGHT), new Vector(CANVAS_WIDTH / 2 + 70, CANVAS_HEIGHT / 2 + 25)),
+			new Skull(new Vector(Skull.WIDTH, Skull.HEIGHT), new Vector(CANVAS_WIDTH / 2 + 110, CANVAS_HEIGHT / 2 + 25))
 		];
+		
+		this.biggerSkulls = [
+			new Skull(new Vector(Skull.WIDTH, Skull.HEIGHT), new Vector(CANVAS_WIDTH / 2 - 640, CANVAS_HEIGHT - (TILE_SIZE * 7))),
+			new Skull(new Vector(Skull.WIDTH, Skull.HEIGHT), new Vector(CANVAS_WIDTH / 2 + 300, CANVAS_HEIGHT - (TILE_SIZE * 7)))
+		]
+
+		this.skulls[2].faceDirection = Direction.Left;
+		this.skulls[3].faceDirection = Direction.Left;
 
 		this.players.forEach(player => player.canMove = false);
 
-		this.backgroundTiles = this.getBackgroundTiles();
+		this.backgroundTiles = UserInterface.getBackgroundTiles();
 	}
 
 	update(dt) {
@@ -72,7 +63,7 @@ export default class TitleScreenState extends State {
 			keys.Enter = false;
 
 			if (this.highlighted == this.menuOptions.start) {
-				stateMachine.change(GameStateName.CharacterSelect, { backgroundTiles: this.backgroundTiles, characters: this.players });
+				stateMachine.change(GameStateName.Instructions, { backgroundTiles: this.backgroundTiles, characters: this.players });
 			}
 			else {
 				stateMachine.change(GameStateName.HighscoreState, { backgroundTiles: this.backgroundTiles });
@@ -80,7 +71,6 @@ export default class TitleScreenState extends State {
 		}
 
 		this.players.forEach(player => player.update(dt));
-		this.enemies.forEach(enemy => enemy.update(dt));
 	}
 
 	render() {
@@ -89,14 +79,15 @@ export default class TitleScreenState extends State {
 		this.titlescreenRender();
 
 		this.players.forEach(player => player.render());
-		this.enemies.forEach(enemy => enemy.render());
+		this.skulls.forEach(skull => skull.render());
+		this.renderBiggerSkulls();
 	}
 
 	titlescreenRender() {
 		context.save();
 		context.textAlign = "center";
 		context.font = '125px WarPriest';
-		context.fillText("Dungeon Descent", CANVAS_WIDTH / 2, CANVAS_HEIGHT - 50);
+		context.fillText("Dungeon Descent", CANVAS_WIDTH / 2, TILE_SIZE * 3);
 
 		context.restore();
 	}
@@ -112,25 +103,18 @@ export default class TitleScreenState extends State {
 		context.fillText(`${this.menuOptions.highscores}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 200);
 		context.restore();
 	}
-	
-	getBackgroundTiles() {
-		const tiles = [];
 
-		let tileSize = Tile.SIZE * CANVAS_SCALE;
+	renderBiggerSkulls() {
+		context.save();
+		context.translate(this.biggerSkulls[0].position.x + (this.biggerSkulls[0].dimensions.x * CANVAS_SCALE * 7), this.biggerSkulls[0].position.y);
+		context.scale(-CANVAS_SCALE * 7, CANVAS_SCALE * 7);
+		this.biggerSkulls[0].sprites[this.biggerSkulls[0].currentAnimation.getCurrentFrame()].render(0, 0);
+		context.restore();
 
-		let sprites = Tile.generateFloorSprites();
-
-		for (let i = 0; i < CANVAS_HEIGHT / tileSize; i++) {
-			tiles.push([]);
-			for (let j = 0; j < CANVAS_WIDTH / tileSize; j++) {
-				tiles[i].push(new Tile(
-					new Vector(j * tileSize, i * tileSize),
-					new Vector(Tile.SIZE, Tile.SIZE),
-					sprites[getRandomPositiveInteger(0, Tile.NUM_FLOOR_SPRITES - 1)]
-				));
-			}
-		}
-
-		return tiles;
+		context.save();
+		context.translate(this.biggerSkulls[1].position.x, this.biggerSkulls[1].position.y);
+		context.scale(CANVAS_SCALE * 7, CANVAS_SCALE * 7);
+		this.biggerSkulls[1].sprites[this.biggerSkulls[1].currentAnimation.getCurrentFrame()].render(0, 0);
+		context.restore();
 	}
 }

@@ -27,6 +27,7 @@ export default class HighscoreState extends State {
         context.save();
         context.textAlign = "center";
 
+        context.fillStyle = "white";
         context.font = "40px WarPriest";
         
         context.fillText("Highscores:", CANVAS_WIDTH / 2, 50);

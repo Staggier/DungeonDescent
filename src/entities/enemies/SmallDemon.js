@@ -11,7 +11,7 @@ export default class SmallDemon extends Enemy {
         this.idlingSprites = SmallDemon.generateIdlingSprites();
         this.walkingSprites = SmallDemon.generateWalkingSprites();
 
-        this.health = 1;
+        this.health = 3;
         this.sprites = this.idlingSprites;
     }
 
@@ -19,10 +19,10 @@ export default class SmallDemon extends Enemy {
         super.update(dt);
 
         if (this.faceDirection == Direction.Right) {
-            this.hitbox.set(this.position.x, this.position.y + 25, Enemy.SMALL_WIDTH * CANVAS_SCALE - 21, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
+            this.hitbox.set(this.position.x + 9, this.position.y + 25, Enemy.SMALL_WIDTH * CANVAS_SCALE - 21, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
         }
         else {
-            this.hitbox.set(this.position.x + 20, this.position.y + 25, Enemy.SMALL_WIDTH * CANVAS_SCALE - 21, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
+            this.hitbox.set(this.position.x + 11, this.position.y + 25, Enemy.SMALL_WIDTH * CANVAS_SCALE - 21, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
         }
     }
 

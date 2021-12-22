@@ -1,16 +1,18 @@
-import { getRandomPositiveInteger } from "../../lib/RandomNumberHelpers.js";
-import Timer from "../../lib/Timer.js";
+import { didSucceedPercentChance, getRandomPositiveInteger } from "../../lib/RandomNumberHelpers.js";
 import Vector from "../../lib/Vector.js";
 import Enemy from "../entities/enemies/Enemy.js";
 import EnemyFactory from "../entities/enemies/EnemyFactory.js";
+import GameEntity from "../entities/GameEntity.js";
 import Player from "../entities/players/Player.js";
 import Direction from "../enums/Direction.js";
+import EnemyStateName from "../enums/EnemyStateName.js";
 import EnemyType from "../enums/EnemyType.js";
 import GameStateName from "../enums/GameStateName.js";
 import ObjectStateName from "../enums/ObjectStateName.js";
+import PlayerStateName from "../enums/PlayerStateName.js";
 import PotionColor from "../enums/PotionColor.js";
 import SoundName from "../enums/SoundName.js";
-import { CANVAS_HEIGHT, CANVAS_SCALE, CANVAS_WIDTH, keys, ROOM_OFFSET, sounds, stateMachine, timer } from "../globals.js";
+import { CANVAS_HEIGHT, CANVAS_SCALE, CANVAS_WIDTH, ROOM_OFFSET, sounds, stateMachine, TILE_SIZE, timer } from "../globals.js";
 import Chest from "./Chest.js";
 import Coin from "./Coin.js";
 import Ladder from "./Ladder.js";
@@ -23,29 +25,28 @@ export default class Room {
     static WIDTH = CANVAS_WIDTH - ROOM_OFFSET;
     static HEIGHT = CANVAS_HEIGHT;
 
-    static LEFT_EDGE = ROOM_OFFSET + (Tile.SIZE * CANVAS_SCALE);
-    static RIGHT_EDGE = CANVAS_WIDTH - (Tile.SIZE * 2 * CANVAS_SCALE) + 15;
-    static TOP_EDGE = Tile.SIZE * CANVAS_SCALE;
-    static BOTTOM_EDGE = CANVAS_HEIGHT - (Tile.SIZE * 3 * CANVAS_SCALE);
+    // Boundaries for the wall tiles.
+    static LEFT_EDGE = ROOM_OFFSET + TILE_SIZE;
+    static RIGHT_EDGE = CANVAS_WIDTH - (TILE_SIZE * 2) + Tile.SIZE;
+    static TOP_EDGE = TILE_SIZE;
+    static BOTTOM_EDGE = CANVAS_HEIGHT - (TILE_SIZE * 3);
 
     constructor(player, doors, enemyType, isBossRoom = false) {
         this.player = player;
         this.enemyType = enemyType;
         this.enemies = isBossRoom ? this.generateBossEnemy() : this.generateEnemies();
 
-        this.timer = new Timer();
-
         this.doors = doors;
         this.tiles = this.generateTiles();
         this.objects = [];
         
-        this.doorsOpened = false;
-        this.visited = false;
-        this.cleared = false;
-        this.wasCleared = false;
         this.isBossRoom = isBossRoom;
         this.isLocked = isBossRoom;
+        this.isCleared = false;
+        this.wasCleared = false;
+        this.wasVisited = false;
 
+        // Rooms connected to current room.
         this.northRoom = null;
         this.southRoom = null;
         this.eastRoom = null;
@@ -56,17 +57,12 @@ export default class Room {
         this.player.update(dt);
         this.enemies.forEach(enemy => enemy.update(dt));
         this.doors.forEach(door => door.update(dt));
-        this.objects.forEach(object => object.update(dt)); 
-        this.timer.update(dt);
+        this.objects.forEach(object => object.update(dt));
 
-        if (!this.cleared && this.enemies.length == 0) {
-            sounds.get(SoundName.Door).play();
-            this.cleared = true;
+        if (!this.isCleared && this.enemies.length == 0) {
+            this.isCleared = true;
+            this.updateDoors();
         } 
-
-        if (this.cleared) {
-            this.openDoors();
-        }
 
         this.updateEnemies();
         this.updateObjects();
@@ -77,88 +73,52 @@ export default class Room {
     updateEnemies() {
         this.enemies.forEach(enemy => {
             if (!enemy.isInvincible && enemy.hitbox.didCollide(this.player.kickHitbox)) {
+                let damage = Player.DAMAGE * this.player.strength;
 
-                sounds.get(SoundName.HitEnemy).play();
-
-                enemy.isInvincible = true;
-                enemy.canMove = false;
-
-                enemy.health -= Player.DAMAGE * this.player.strength;
-
-                if (enemy.health <= 0) {
+                if (enemy.health - damage <= 0) {
                     enemy.isDead = true;
 
                     this.lastEnemyPosition = enemy.position;
                     this.player.score += this.isBossRoom ? Enemy.LARGE_ENEMY_SCORE : Enemy.SMALL_ENEMY_SCORE;
 
+                    // Potentially spawn chest if there are no enemies remaining.
                     if (this.enemies.length == 1) {
-                        this.checkLuck(enemy.position);
+                        this.chestChance();
                     }
 
+                    // Add ladder to Boss room if there are no enemies remaining.
                     if (this.isBossRoom) {
                         this.addLadder();
                     }
+
+                    this.potionChance();
                 }
-
-                let val = this.player.position.x > enemy.position.x ? -1 : 1;
-
-                timer.tween(enemy.position, ["x"], [enemy.position.x + (val * Tile.SIZE * CANVAS_SCALE)], 0.2, () => {
-                    enemy.isInvincible = false;
-                    enemy.canMove = true;  
-                });   
+                else {
+                    // Set direction to -1 if enemy is to the left of the player else set to 1.
+                    let direction = this.player.position.x > enemy.position.x ? -1 : 1;
+                    enemy.stateMachine.change(EnemyStateName.Hurting, { knockback: this.player.knockback, direction: direction, damage: damage });
+                }
+ 
             }
             else if (!this.player.isInvincible && enemy.hitbox.didCollide(this.player.hitbox)) {
-                
-                sounds.get(SoundName.HitPlayer).play();
+                let damage = 0;
 
                 switch (this.enemyType) {
                     case EnemyType.SmallDemon:
-                        this.player.health -= Enemy.SMALL_ENEMY_DAMAGE;
-                        break;
                     case EnemyType.SmallOrc:
-                        this.player.health -= Enemy.SMALL_ENEMY_DAMAGE;
-                        break;
                     case EnemyType.SmallZombie:
-                        this.player.health -= Enemy.SMALL_ENEMY_DAMAGE;
+                        damage = Enemy.SMALL_ENEMY_DAMAGE;
                         break;
                     default:
-                        this.player.health -= Enemy.LARGE_ENEMY_DAMAGE;
+                        damage = Enemy.LARGE_ENEMY_DAMAGE;
                         break;
                 }
 
-                if (this.player.health <= 0) {
-                    stateMachine.change(GameStateName.GameOver, { backgroundTiles: stateMachine.states.play.backgroundTiles, player: this.player, enemy: enemy});
+                if (this.player.health - damage <= 0) {
+                    stateMachine.change(GameStateName.GameOver, { backgroundTiles: stateMachine.states.play.backgroundTiles, player: this.player, enemy: enemy, bossDeath: this.isBossRoom });
                 }
                 else {
-                    this.player.canMove = false;
-                    this.player.isInvincible = true;
-
-                    switch (enemy.direction) {
-                        case Direction.Up:
-                            timer.tween(this.player.position, ["y"], [this.player.position.y + (-Tile.SIZE * CANVAS_SCALE)], 0.5, () => {
-                                this.player.isInvincible = false;
-                                this.player.canMove = true;  
-                            });
-                            break;
-                        case Direction.Down:
-                            timer.tween(this.player.position, ["y"], [this.player.position.y + (Tile.SIZE * CANVAS_SCALE)], 0.5, () => {
-                                this.player.isInvincible = false;
-                                this.player.canMove = true;  
-                            });
-                            break;
-                        case Direction.Left:
-                            timer.tween(this.player.position, ["x"], [this.player.position.x + (-Tile.SIZE * CANVAS_SCALE)], 0.5, () => {
-                                this.player.isInvincible = false;
-                                this.player.canMove = true;  
-                            });
-                            break;
-                        case Direction.Right:
-                            timer.tween(this.player.position, ["x"], [this.player.position.x + (Tile.SIZE * CANVAS_SCALE)], 0.5, () => {
-                                this.player.isInvincible = false;
-                                this.player.canMove = true;  
-                            });
-                            break;
-                    }
+                    this.player.stateMachine.change(PlayerStateName.Hurting, { enemy: enemy, damage: damage });
                 }
             }
         });
@@ -177,18 +137,22 @@ export default class Room {
                 else {
                     if (!object.item.wasConsumed) {
                         if (object.item instanceof Coin) {
-                            this.player.score += 15 * this.player.luck;
+                            this.player.score += 15;
                         }
                         else {
                             switch(object.item.color) {
+                                case PotionColor.Red:
+                                    this.player.health += 1;
+                                    break;
                                 case PotionColor.Blue:
-                                    this.player.strength += 0.5;
+                                    this.player.strength += 1;
+                                    this.player.knockback = (2 + this.strength) * TILE_SIZE;
                                     break;
                                 case PotionColor.Green:
                                     this.player.luck += 1;
                                     break;
                                 case PotionColor.Yellow:
-                                    this.player.speed += 1;
+                                    this.player.speed += TILE_SIZE;
                                     break;
                             }
                         }
@@ -197,12 +161,17 @@ export default class Room {
                 }
             }
             else if (object instanceof Lever && object.hitbox.didCollide(this.player.kickHitbox)) {
-                if (!object.on && this.player.faceDirection == Direction.Right) {
-                    object.changeState(ObjectStateName.LeverActivating);
+                this.updateDoors();
+                if (!object.isActivated && this.player.faceDirection == Direction.Right) {
+                    object.changeState(ObjectStateName.LeverResting);
                 }
-                else if (object.on && this.player.faceDirection == Direction.Left) {
-                    object.changeState(ObjectStateName.LeverAwaiting);
+                else if (object.isActivated && this.player.faceDirection == Direction.Left) {
+                    object.changeState(ObjectStateName.LeverIdling);
                 }
+            }
+            else if (object instanceof Potion && !object.wasConsumed && object.isColliding(this.player)) {
+                this.player.health += 1;
+                object.wasConsumed = true;
             }
         });
     }
@@ -217,6 +186,11 @@ export default class Room {
         ]).forEach(entity => entity.render());
     }
 
+    /**
+     * Reorders all entities in the current room for rendering.
+     * @param {Array<GameEntity>} entities 
+     * @returns An array of entities.
+     */
     getRenderOrder(entities) {
         return entities.sort((a, b) => {
             const bottomA = a.hitbox.position.y + a.hitbox.dimensions.y;
@@ -240,36 +214,81 @@ export default class Room {
         });
     }
 
+    /**
+     * Removes dead enemies from the current room.
+     */
     cleanUpEnemies() {
 		this.enemies = this.enemies.filter((entity) => !entity.isDead);
 	}
 
-    checkLuck(spawnLocation) {
-        let position = new Vector(spawnLocation.x, spawnLocation.y);
+    /**
+     * Spawns a chest in the current room by chance or if the current room is a boss room.
+     */
+    chestChance() {
+        let position = new Vector(
+            getRandomPositiveInteger(Room.LEFT_EDGE, Room.RIGHT_EDGE - TILE_SIZE),
+            getRandomPositiveInteger(Room.TOP_EDGE + TILE_SIZE, Room.BOTTOM_EDGE)
+        );
 
         if (this.isBossRoom) {
-            let colors = [PotionColor.Blue, PotionColor.Green, PotionColor.Yellow];
-            this.objects.push(new Chest(new Vector(Chest.WIDTH, Chest.HEIGHT), position, new Potion(new Vector(Potion.WIDTH, Potion.HEIGHT), new Vector(position.x + ((Chest.WIDTH + 3) / 2), position.y), colors[getRandomPositiveInteger(0, 2)])))
+            let colors = [PotionColor.Red, PotionColor.Blue, PotionColor.Green, PotionColor.Yellow];
+            this.objects.push(new Chest(new Vector(Chest.WIDTH, Chest.HEIGHT), position, new Potion(new Vector(Potion.WIDTH, Potion.HEIGHT), new Vector(position.x + ((Chest.WIDTH + 3) / 2), position.y), colors[getRandomPositiveInteger(0, 3)])))
         }
         else {
             for (let i = 0; i < this.player.luck; i++) {
-                if(getRandomPositiveInteger(0, 9) <= 4) {
+                position = new Vector(
+                    getRandomPositiveInteger(Room.LEFT_EDGE, Room.RIGHT_EDGE - TILE_SIZE),
+                    getRandomPositiveInteger(Room.TOP_EDGE + TILE_SIZE, Room.BOTTOM_EDGE)
+                );
+
+                if (didSucceedPercentChance(0.45)) {
                     this.objects.push(new Chest(new Vector(Chest.WIDTH, Chest.HEIGHT), position, new Coin(new Vector(Coin.WIDTH, Coin.HEIGHT), new Vector(position.x + ((Chest.WIDTH + 13) / 2), position.y))))
                 }
             }
         }
     }
 
+    /**
+     * Adds a ladder to the current room.
+     */
+
     addLadder() {
-        this.objects.push(new Ladder(new Vector(Ladder.WIDTH, Ladder.HEIGHT), new Vector(CANVAS_WIDTH - (Tile.SIZE * 3 * CANVAS_SCALE), Tile.SIZE * 2 * CANVAS_SCALE)))
+        this.objects.push(new Ladder(
+            new Vector(Ladder.WIDTH, Ladder.HEIGHT),
+            new Vector(CANVAS_WIDTH - (Tile.SIZE * 3 * CANVAS_SCALE), Tile.SIZE * 2 * CANVAS_SCALE)
+        ));
     }
 
+    /**
+     * Potentially adds a health potion to the current room.
+     */
+
+    potionChance() {
+        for (let i = 0; i < this.player.luck; i++) {
+            let position = new Vector(
+                getRandomPositiveInteger(Room.LEFT_EDGE, Room.RIGHT_EDGE - TILE_SIZE),
+                getRandomPositiveInteger(Room.TOP_EDGE + TILE_SIZE, Room.BOTTOM_EDGE)
+            );
+
+            if (didSucceedPercentChance(0.45)) {
+                this.objects.push(new Potion(
+                    new Vector(Potion.WIDTH, Potion.HEIGHT),
+                    new Vector(position.x, position.y),
+                    PotionColor.Red
+                ));
+            }
+        }
+    }
+
+    /**
+     * Retrieves the enemies for the given room based on the enemy type.
+     */
     generateEnemies() {
         const enemies = [];
 
         if (this.enemyType != "") {
 
-            let numEnemies = getRandomPositiveInteger(2, 5);
+            let numEnemies = getRandomPositiveInteger(3, 7);
 
             for (let i = 0; i < numEnemies; i++) {
                 enemies.push(EnemyFactory.createInstance(
@@ -283,6 +302,9 @@ export default class Room {
         return enemies;
     }
 
+    /**
+     * Retrieves the Boss enemy for the given room based on the enemy type.
+     */
     generateBossEnemy() {
         const enemy = [];
 
@@ -295,12 +317,15 @@ export default class Room {
         return enemy;
     }
 
+    /**
+     * Generates the necessary tiles for the current room.
+     * @returns An array of floor and wall tiles.
+     */
     generateTiles() {
         const tiles = [];
 
-        let tileSize = Tile.SIZE * CANVAS_SCALE;
-        let numRows = Math.floor((CANVAS_HEIGHT - (tileSize * 2))  / tileSize);
-        let numCols = Math.floor((CANVAS_WIDTH - ROOM_OFFSET - tileSize) / tileSize);
+        let numRows = Math.floor((CANVAS_HEIGHT - (TILE_SIZE * 2)) / TILE_SIZE);
+        let numCols = Math.floor((CANVAS_WIDTH - ROOM_OFFSET - TILE_SIZE) / TILE_SIZE);
 
         let wallSprites = Tile.generateWallSprites();
         let wallCornerSprites = Tile.generateWallCornerSprites();
@@ -310,7 +335,7 @@ export default class Room {
             tiles.push([]);
             for (let j = 0; j < numCols; j++) {
                 tiles[i].push(new Tile(
-                    new Vector(j * tileSize + ROOM_OFFSET, i * tileSize + tileSize),
+                    new Vector(j * TILE_SIZE + ROOM_OFFSET, i * TILE_SIZE + TILE_SIZE),
                     new Vector(Tile.SIZE, Tile.SIZE),
                     i == 0 || i == numRows - 1 || j == 0 || j == numCols - 1 ? wallSprites[getRandomPositiveInteger(0, 2)] : floorSprites[getRandomPositiveInteger(0, 2)],
                     i == 0 ? Direction.Down : i == numRows - 1 ? Direction.Up : j == 0 ? Direction.Right : j == numCols - 1 ? Direction.Left : Direction.Down
@@ -318,26 +343,28 @@ export default class Room {
             }
         }
 
+        // Add 'corner' sprites for a smoother look.
+
         tiles[numRows - 1].push(new Tile(
-            new Vector(ROOM_OFFSET, tileSize),
+            new Vector(ROOM_OFFSET, TILE_SIZE),
             new Vector(Tile.SIZE / 2, Tile.SIZE / 2),
             wallCornerSprites[0]
         ));
 
         tiles[numRows - 1].push(new Tile(
-            new Vector((numCols - 1) * tileSize + ROOM_OFFSET + 24, tileSize),
+            new Vector((numCols - 1) * TILE_SIZE + ROOM_OFFSET + 24, TILE_SIZE),
             new Vector(Tile.SIZE / 2, Tile.SIZE / 2),
             wallCornerSprites[1],
         ));
 
         tiles[numRows - 1].push(new Tile(
-            new Vector(ROOM_OFFSET, CANVAS_HEIGHT - (tileSize * 2)),
+            new Vector(ROOM_OFFSET, CANVAS_HEIGHT - (TILE_SIZE * 2)),
             new Vector(Tile.SIZE / 2, Tile.SIZE / 2),
             wallCornerSprites[2]
         ));
 
         tiles[numRows - 1].push(new Tile(
-            new Vector((numCols - 1) * tileSize + ROOM_OFFSET + 24, CANVAS_HEIGHT - (tileSize * 2)),
+            new Vector((numCols - 1) * TILE_SIZE + ROOM_OFFSET + 24, CANVAS_HEIGHT - (TILE_SIZE * 2)),
             new Vector(Tile.SIZE / 2, Tile.SIZE / 2),
             wallCornerSprites[3],
         ));
@@ -345,6 +372,11 @@ export default class Room {
         return tiles;
     }
 
+    /**
+     * Connects a given room to the current room based on a given direction.
+     * @param {Room} room 
+     * @param {Number} direction 
+     */
     addRoom(room, direction) {
         switch (direction) {
             case Direction.Up:
@@ -362,23 +394,43 @@ export default class Room {
         }
     }
 
-    closeDoors() {
-        this.doors.forEach(door => door.changeState(ObjectStateName.DoorIdling));
-    }
-
-    openDoors() {
+    /**
+     * Opens/closes all unlocked/locked doors inside the current room.
+     */
+    updateDoors() {
+        let opened = 0;
 
         this.doors.forEach(door => {
             switch (door.faceDirection) {
                 case Direction.Down:
-                    if (this.northRoom && !this.northRoom.isLocked) {
-                        door.changeState(ObjectStateName.DoorResting);
+                    if (this.northRoom) {
+                        door.changeState(this.northRoom.isLocked || !this.isCleared ? ObjectStateName.DoorIdling : ObjectStateName.DoorResting);
+                        opened += this.northRoom.isLocked ? 0 : 1;
                     }
                     break;
-                default:
-                    door.changeState(ObjectStateName.DoorResting);
+                case Direction.Left:
+                    if (this.westRoom) {
+                        door.changeState(this.westRoom.isLocked || !this.isCleared ? ObjectStateName.DoorIdling : ObjectStateName.DoorResting);
+                        opened += this.westRoom.isLocked ? 0 : 1;
+                    }
+                    break;
+                case Direction.Right:
+                    if (this.eastRoom) {
+                        door.changeState(this.eastRoom.isLocked || !this.isCleared ? ObjectStateName.DoorIdling : ObjectStateName.DoorResting);
+                        opened += this.eastRoom.isLocked ? 0 : 1;
+                    }
+                    break;
+                case Direction.Up:
+                    if (this.southRoom) {
+                        door.changeState(this.southRoom.isLocked || !this.isCleared ? ObjectStateName.DoorIdling : ObjectStateName.DoorResting);
+                        opened += this.southRoom.isLocked ? 0 : 1;
+                    }
                     break;
             }
         });
+
+        if (opened > 0) {
+            sounds.play(SoundName.Door);
+        }
     }
 }

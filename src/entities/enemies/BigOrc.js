@@ -11,7 +11,7 @@ export default class BigOrc extends Enemy {
         this.idlingSprites = BigOrc.generateIdlingSprites();
         this.walkingSprites = BigOrc.generateWalkingSprites();
 
-        this.health = 2;
+        this.health = 4;
         this.sprites = this.idlingSprites;
     }
 

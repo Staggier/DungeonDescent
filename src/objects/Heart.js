@@ -4,14 +4,13 @@ import StateMachine from "../../lib/StateMachine.js";
 import ImageName from "../enums/ImageName.js";
 import ObjectStateName from "../enums/ObjectStateName.js";
 import { images } from "../globals.js";
-import HeartIdlingState from "../states/object/HeardIdlingState.js";
-import LadderIdlingState from "../states/object/LadderIdlingState.js";
+import HeartIdlingState from "../states/object/HeartIdlingState.js";
 import GameObject from "./GameObject.js";
 import Tile from "./Tile.js";
 
 export default class Heart extends GameObject {
-    static WIDTH = 16;
-    static HEIGHT = 16;
+    static WIDTH = Tile.SIZE;
+    static HEIGHT = Tile.SIZE;
     static NUM_SPRITES = 3;
 
     constructor(dimensions, position) {

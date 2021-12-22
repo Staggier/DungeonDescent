@@ -5,11 +5,12 @@ import ObjectStateName from "../enums/ObjectStateName.js";
 import { images } from "../globals.js";
 import PotionIdlingState from "../states/object/PotionIdlingState.js";
 import GameObject from "./GameObject.js";
+import Tile from "./Tile.js";
 
 export default class Potion extends GameObject {
-    static WIDTH = 16;
-    static HEIGHT = 16;
-    static NUM_SPRITES = 3;
+    static WIDTH = Tile.SIZE;
+    static HEIGHT = Tile.SIZE;
+    static NUM_SPRITES = 4;
 
     constructor(dimensions, position, color) {
         super(dimensions, position);
@@ -21,6 +22,9 @@ export default class Potion extends GameObject {
 
         this.idlingSprites = Potion.generateSprites();
         this.sprites = this.idlingSprites;
+
+        this.isSolid = false;
+        this.isCollidable = true;
     }
 
     update(dt) {
@@ -37,10 +41,10 @@ export default class Potion extends GameObject {
         for (let i = 0; i < Potion.NUM_SPRITES; i++) {
             sprites.push(new Sprite(
                 images.get(ImageName.SpriteSheet),
-                307 + (Potion.WIDTH * i),
+                291 + (Potion.WIDTH * i),
                 223,
-                Potion.WIDTH,
-                Potion.HEIGHT
+                Tile.SIZE,
+                Tile.SIZE
             ));
         }
 

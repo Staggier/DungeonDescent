@@ -19,10 +19,10 @@ export default class SmallZombie extends Enemy {
         super.update(dt);
 
         if (this.faceDirection == Direction.Right) {
-            this.hitbox.set(this.position.x + 10, this.position.y + 24, Enemy.SMALL_WIDTH * CANVAS_SCALE - 26, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 30);
+            this.hitbox.set(this.position.x + 8, this.position.y + 35, Enemy.SMALL_WIDTH * CANVAS_SCALE - 25, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 40);
         }
         else {
-            this.hitbox.set(this.position.x + 18, this.position.y + 24, Enemy.SMALL_WIDTH * CANVAS_SCALE - 25, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 30);
+            this.hitbox.set(this.position.x + 18, this.position.y + 35, Enemy.SMALL_WIDTH * CANVAS_SCALE - 25, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 40);
         }
     }
 

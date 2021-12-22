@@ -1,8 +1,7 @@
 import Sprite from "../../lib/Sprite.js";
 import Direction from "../enums/Direction.js";
 import ImageName from "../enums/ImageName.js";
-import { CANVAS_SCALE, context, images } from "../globals.js";
-
+import { CANVAS_SCALE, context, images, TILE_SIZE } from "../globals.js";
 
 export default class Tile {
     static SIZE = 16;
@@ -20,8 +19,7 @@ export default class Tile {
     render() {
         context.save();
 
-        let tileSize = Tile.SIZE * CANVAS_SCALE;
-        context.translate(this.position.x + tileSize / 2, this.position.y + tileSize / 2);
+        context.translate(this.position.x + TILE_SIZE / 2, this.position.y + TILE_SIZE / 2);
 
         switch(this.faceDirection) {
             case Direction.Down:
@@ -111,6 +109,28 @@ export default class Tile {
             ));
         }
 
+        return sprites;
+    }
+
+    static generateBorderTiles() {
+        const sprites = [];
+
+        sprites.push(new Sprite(
+            images.get(ImageName.SpriteSheet),
+            80,
+            128,
+            5,
+            12
+        ));
+
+        sprites.push(new Sprite(
+            images.get(ImageName.SpriteSheet),
+            85,
+            140,
+            10,
+            4
+        ));
+        
         return sprites;
     }
 }

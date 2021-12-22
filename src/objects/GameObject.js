@@ -1,6 +1,5 @@
 import { getCollisionDirection } from "../../lib/CollisionHelpers.js";
 import Hitbox from "../../lib/Hitbox.js";
-import Timer from "../../lib/Timer.js";
 import Direction from "../enums/Direction.js";
 import { CANVAS_SCALE, context } from "../globals.js";
 
@@ -13,7 +12,7 @@ export default class GameObject {
             this.position.x,
             this.position.y,
             this.dimensions.x * CANVAS_SCALE,
-            this.dimensions.y * CANVAS_SCALE  
+            this.dimensions.y * CANVAS_SCALE, 
         );
 
         this.stateMachine = null;
@@ -58,7 +57,14 @@ export default class GameObject {
     changeState(stateName, params) {
         this.stateMachine.change(stateName, params);
     }
- 
+    
+    isColliding(collider) {
+        return this.hitbox.didCollide(collider.hitbox);
+    }
+
+    /**
+     * Prevents entities from overlapping when colliding.
+     */
 	onCollision(collider) {
 		if (this.isSolid) {
 			const collisionDirection = this.getEntityCollisionDirection(collider.hitbox);

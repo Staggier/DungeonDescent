@@ -14,6 +14,9 @@ export default class EnemyIdlingState extends State {
     }
 
     enter() {
+		this.enemy.canMove = true;
+        this.enemy.isInvincible = false;
+
         this.enemy.sprites = this.enemy.walkingSprites;
         this.enemy.currentAnimation = this.animation;
         
@@ -24,7 +27,5 @@ export default class EnemyIdlingState extends State {
 
     update(dt) {
         this.timer.update(dt);
-
-
     }
 }

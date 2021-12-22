@@ -11,11 +11,11 @@ export default class BigDemon extends Enemy {
         this.idlingSprites = BigDemon.generateIdlingSprites();
         this.walkingSprites = BigDemon.generateWalkingSprites();
 
-        this.health = 2;
+        this.health = 5;
         this.sprites = this.idlingSprites;
     }
 
-        update(dt) {
+    update(dt) {
         super.update(dt);
 
         if (this.faceDirection == Direction.Right) {

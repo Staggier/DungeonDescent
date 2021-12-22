@@ -1,22 +1,25 @@
-import Hitbox from "../../../lib/Hitbox.js";
 import Sprite from "../../../lib/Sprite.js";
 import ImageName from "../../enums/ImageName.js";
-import { CANVAS_SCALE, context, images } from "../../globals.js";
-import Tile from "../../objects/Tile.js";
+import { images, TILE_SIZE } from "../../globals.js";
 import Player from "./Player.js";
 
 export default class Lizard extends Player {
 
-    static SPEED = Tile.SIZE * CANVAS_SCALE * 5;
+    static NAME = "Lizard";
+    static HEALTH = 5.0;
+    static SPEED = TILE_SIZE * 5;
     static STRENGTH = 1.0;
     static LUCK = 1.0;
 
     constructor(dimensions, position) {
         super(dimensions, position);
 
+        this.name = Lizard.NAME;
+        this.health = Lizard.HEALTH;
         this.speed = Lizard.SPEED;
         this.strength = Lizard.STRENGTH;
         this.luck = Lizard.LUCK;
+        this.knockback = (2 + this.strength) * TILE_SIZE;
 
         this.idlingSprites = Lizard.generateIdlingSprites();
         this.walkingSprites = Lizard.generateWalkingSprites();

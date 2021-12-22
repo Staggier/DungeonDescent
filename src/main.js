@@ -17,15 +17,7 @@
 
 import GameStateName from "./enums/GameStateName.js";
 import Game from "../lib/Game.js";
-import {
-	canvas,
-	context,
-	fonts,
-	images,
-	keys,
-	sounds,
-	stateMachine,
-} from "./globals.js";
+import { canvas, context, fonts, images, keys, sounds, stateMachine, } from "./globals.js";
 import PlayState from "./states/game/PlayState.js";
 import GameOverState from "./states/game/GameOverState.js";
 import VictoryState from "./states/game/VictoryState.js";
@@ -33,6 +25,7 @@ import TitleScreenState from "./states/game/TitleScreenState.js";
 import CharacterSelectState from "./states/game/CharacterSelectState.js";
 import HighscoreState from "./states/game/HighscoreState.js";
 import EnterHighscoreState from "./states/game/EnterHighscoreState.js";
+import InstructionState from "./states/game/InstructionState.js";
 
 // Fetch the asset definitions from config.json.
 const {
@@ -55,6 +48,7 @@ stateMachine.add(GameStateName.Play, new PlayState());
 stateMachine.add(GameStateName.CharacterSelect, new CharacterSelectState());
 stateMachine.add(GameStateName.HighscoreState, new HighscoreState());
 stateMachine.add(GameStateName.EnterHighscore, new EnterHighscoreState());
+stateMachine.add(GameStateName.Instructions, new InstructionState());
 
 stateMachine.change(GameStateName.TitleScreen);
 

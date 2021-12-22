@@ -1,7 +1,8 @@
 const PotionColor = {
-    Blue: 0,
-    Green: 1,
-    Yellow: 2
+    Red: 0,
+    Blue: 1,
+    Green: 2,
+    Yellow: 3
 }
 
 export default PotionColor;

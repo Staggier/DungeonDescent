@@ -1,7 +1,7 @@
 import Animation from "../../../lib/Animation.js";
 import State from "../../../lib/State.js";
 
-export default class LeverActivatingState extends State {
+export default class LeverIdlingState extends State {
     constructor(lever) {
         super();
 
@@ -11,13 +11,8 @@ export default class LeverActivatingState extends State {
 
     enter() {
         this.lever.currentAnimation = this.animation;
-        this.lever.sprites = this.lever.activatingSprites;
-        this.lever.on = true;
-    }
-
-    update(dt) {
-        if (this.lever.wasConsumed) {
-            
-        }
+        this.lever.sprites = this.lever.idlingSprites;
+        this.lever.isActivated = false;
+        this.lever.bossRoom.isLocked = true;
     }
 }

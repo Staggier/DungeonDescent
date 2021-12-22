@@ -1,7 +1,7 @@
 const PlayerType = {
-    Lizard: "Lizard",
-    Knight: "Knight",
-    Wizard: "Wizard"
+    Lizard: "lizard",
+    Knight: "knight",
+    Wizard: "wizard"
 }
 
 export default PlayerType;

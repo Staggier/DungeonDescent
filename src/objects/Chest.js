@@ -1,18 +1,18 @@
 import Sprite from "../../lib/Sprite.js";
 import StateMachine from "../../lib/StateMachine.js";
-import Timer from "../../lib/Timer.js";
 import ImageName from "../enums/ImageName.js";
 import ObjectStateName from "../enums/ObjectStateName.js";
-import { CANVAS_SCALE, context, images, timer } from "../globals.js";
+import { images, TILE_SIZE, timer } from "../globals.js";
 import ChestIdlingState from "../states/object/ChestIdlingState.js";
 import ChestOpeningState from "../states/object/ChestOpeningState.js";
 import ChestRestingState from "../states/object/ChestRestingState.js";
 import GameObject from "./GameObject.js";
+import Tile from "./Tile.js";
 
 export default class Chest extends GameObject {
 
-    static WIDTH = 16;
-    static HEIGHT = 16;
+    static WIDTH = Tile.SIZE;
+    static HEIGHT = Tile.SIZE;
     static NUM_SPRITES = 3;
 
     constructor(dimensions, position, item) {
@@ -41,7 +41,7 @@ export default class Chest extends GameObject {
         super.update(dt);
         this.item.update(dt);
 
-        this.hitbox.set(this.position.x, this.position.y + 5, Chest.WIDTH * CANVAS_SCALE, Chest.HEIGHT * CANVAS_SCALE - 5);
+        this.hitbox.set(this.position.x, this.position.y + 5, TILE_SIZE, TILE_SIZE - 5);
     }
 
     render() {

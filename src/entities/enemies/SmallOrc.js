@@ -12,7 +12,7 @@ export default class SmallOrc extends Enemy {
         this.idlingSprites = SmallOrc.generateIdlingSprites();
         this.walkingSprites = SmallOrc.generateWalkingSprites();
 
-        this.health = 1;
+        this.health = 2;
         this.sprites = this.idlingSprites;
     }
 
@@ -20,10 +20,10 @@ export default class SmallOrc extends Enemy {
         super.update(dt);
 
         if (this.faceDirection == Direction.Right) {
-            this.hitbox.set(this.position.x + 1, this.position.y + 20, Enemy.SMALL_WIDTH * CANVAS_SCALE - 12, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
+            this.hitbox.set(this.position.x + 2, this.position.y + 20, Enemy.SMALL_WIDTH * CANVAS_SCALE - 12, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
         }
         else {
-            this.hitbox.set(this.position.x + 11, this.position.y + 20, Enemy.SMALL_WIDTH * CANVAS_SCALE - 12, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
+            this.hitbox.set(this.position.x + 8, this.position.y + 20, Enemy.SMALL_WIDTH * CANVAS_SCALE - 12, Enemy.SMALL_HEIGHT * CANVAS_SCALE - 35);
         }
     }
 

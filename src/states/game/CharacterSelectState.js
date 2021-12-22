@@ -1,12 +1,8 @@
 import State from "../../../lib/State.js";
-import Player from "../../entities/players/Player.js";
-import EnemyType from "../../enums/EnemyType.js";
 import GameStateName from "../../enums/GameStateName.js";
 import PlayerStateName from "../../enums/PlayerStateName.js";
-import { keys, stateMachine } from "../../globals.js";
-import Door from "../../objects/Door.js";
-import DungeonFloor from "../../objects/DungeonFloor.js";
-import Room from "../../objects/Room.js";
+import { CANVAS_WIDTH, context, keys, stateMachine, TILE_SIZE } from "../../globals.js";
+import Dungeon from "../../objects/Dungeon.js";
 
 export default class CharacterSelectState extends State {
     constructor() {
@@ -29,7 +25,7 @@ export default class CharacterSelectState extends State {
             
             stateMachine.change(GameStateName.Play, {
                 player: this.choice,
-                dungeonFloor: DungeonFloor.getFirstFloor(this.choice),
+                dungeon: new Dungeon(this.choice),
                 backgroundTiles: this.backgroundTiles
             });
         }
@@ -57,5 +53,22 @@ export default class CharacterSelectState extends State {
     render() {
         this.backgroundTiles.forEach(tiles => tiles.forEach(tile => tile.render()));
         this.characters.forEach(character => character.render());
+        this.renderCharacterStats();
+    }
+
+    renderCharacterStats() {
+        context.save();
+
+        context.fillStyle = "white";
+        context.font = "35px WarPriest";
+        context.textAlign = "center";
+
+        context.fillText(`Name: ${ this.choice.name}`, CANVAS_WIDTH / 2, TILE_SIZE * 8, 500);
+        context.fillText(`Health: ${ this.choice.health}`, CANVAS_WIDTH / 2, TILE_SIZE * 9, 500);
+        context.fillText(`Strength: ${ this.choice.strength}`, CANVAS_WIDTH / 2, TILE_SIZE * 10, 500);
+        context.fillText(`Luck: ${ this.choice.luck}`, CANVAS_WIDTH / 2, TILE_SIZE * 11, 500);
+        context.fillText(`Speed: ${ this.choice.speed / TILE_SIZE }`, CANVAS_WIDTH / 2, TILE_SIZE * 12, 500);
+
+        context.restore();
     }
 }

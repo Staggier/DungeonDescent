@@ -24,13 +24,14 @@ export default class PlayerAttackingState extends State {
 
             if (this.player.currentAnimation.getCurrentFrame() == Player.ATTACK_FRAME) {
                 if (this.player.faceDirection == Direction.Right) {
-                    this.player.kickHitbox.set(this.player.position.x - 2, this.player.position.y + (Player.WIDTH * CANVAS_SCALE) + 10, Player.WIDTH * CANVAS_SCALE + 6, 17);
+                    this.player.kickHitbox.set(this.player.position.x - 12, this.player.position.y + (Player.WIDTH * CANVAS_SCALE) + 5, Player.WIDTH * CANVAS_SCALE + 20, 25);
                 }   
                 else {
-                    this.player.kickHitbox.set(this.player.position.x - 5, this.player.position.y + (Player.WIDTH * CANVAS_SCALE) + 10, Player.WIDTH * CANVAS_SCALE + 6, 17);
+                    this.player.kickHitbox.set(this.player.position.x - 9, this.player.position.y + (Player.WIDTH * CANVAS_SCALE) + 5, Player.WIDTH * CANVAS_SCALE + 20, 25);
                 }         
             }
 
+            // Reset kick hitbox when animation is over.
             if (this.player.currentAnimation.isDone()) {
                 this.player.kickHitbox.set(0, 0, 0, 0);
                 this.player.currentAnimation.refresh();

@@ -1,6 +1,5 @@
 import Direction from "../enums/Direction.js";
 import { context, CANVAS_SCALE } from "../globals.js";
-import Vector from "../../lib/Vector.js";
 
 export default class GameEntity {
     constructor(dimensions, position) {

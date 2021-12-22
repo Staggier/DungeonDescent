@@ -11,7 +11,7 @@ export default class BigZombie extends Enemy {
         this.idlingSprites = BigZombie.generateIdlingSprites();
         this.walkingSprites = BigZombie.generateWalkingSprites();
 
-        this.health = 2;
+        this.health = 3;
         this.sprites = this.idlingSprites;
     }
 

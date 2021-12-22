@@ -11,14 +11,16 @@ export default class GameOverState extends State {
 
 	enter(params) {
 		this.backgroundTiles = params.backgroundTiles;
+		this.bossDeath = params.bossDeath;
 		this.enemy = params.enemy;
 		this.player = params.player;
-		this.enemy.position = new Vector(CANVAS_WIDTH / 2 - 100, CANVAS_HEIGHT / 2 - 150);
+		this.enemy.position = this.bossDeath ? new Vector(CANVAS_WIDTH / 2 - 115, CANVAS_HEIGHT / 2 - 275) : new Vector(CANVAS_WIDTH / 2 - 100, CANVAS_HEIGHT / 2 - 150);
 		this.enemy.canMove = false;
 		sounds.stop(SoundName.Music);
 	}
 
 	update(dt) {
+		this.enemy.canMove = false;
 		this.enemy.update(dt);
 
 		if (keys.Escape) {

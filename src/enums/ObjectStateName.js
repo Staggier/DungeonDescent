@@ -7,9 +7,12 @@ const ObjectStateName = {
     DoorResting: "door-resting",
     HeartIdling: "heart-idling",
     LadderIdling: "ladder-idling",
-    LeverAwaiting: "lever-awaiting",
-    LeverActivating: "lever-activating",
-    PotionIdling: "potion-idling"
+    LeverIdling: "lever-idling",
+    LeverResting: "lever-resting",
+    PotionIdling: "potion-idling",
+    RoomIdling: "room-idling",
+    RoomChanging: "room-changing",
+    SkullIdling: "skull-idling"
 };
 
 export default ObjectStateName;

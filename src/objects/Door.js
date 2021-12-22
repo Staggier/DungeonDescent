@@ -1,15 +1,13 @@
 import Sprite from "../../lib/Sprite.js";
 import StateMachine from "../../lib/StateMachine.js";
-import Timer from "../../lib/Timer.js";
 import Vector from "../../lib/Vector.js";
 import Direction from "../enums/Direction.js";
 import ImageName from "../enums/ImageName.js";
 import ObjectStateName from "../enums/ObjectStateName.js";
-import { CANVAS_HEIGHT, CANVAS_SCALE, CANVAS_WIDTH, context, images, ROOM_OFFSET } from "../globals.js";
+import { CANVAS_HEIGHT, CANVAS_SCALE, CANVAS_WIDTH, context, images, ROOM_OFFSET, TILE_SIZE } from "../globals.js";
 import DoorIdlingState from "../states/object/DoorIdlingState.js";
 import DoorRestingState from "../states/object/DoorRestingState.js";
 import GameObject from "./GameObject.js";
-import Tile from "./Tile.js";
 
 export default class Door extends GameObject {
 
@@ -36,16 +34,16 @@ export default class Door extends GameObject {
 
         switch (direction) {
             case Direction.Down:
-                this.hitbox.set(this.position.x + 1, this.position.y + 1, (Tile.SIZE * CANVAS_SCALE) + 22, Tile.SIZE * CANVAS_SCALE + 14);
+                this.hitbox.set(this.position.x + 30, this.position.y + 1, TILE_SIZE - 35, TILE_SIZE);
                 break;
             case Direction.Left:
-                this.hitbox.set(this.position.x - 15, this.position.y - 15, (Tile.SIZE * CANVAS_SCALE) + 14, Tile.SIZE * CANVAS_SCALE + 22);
+                this.hitbox.set(this.position.x - 15, this.position.y + 10, TILE_SIZE + 14, TILE_SIZE - 40);
                 break;
             case Direction.Right:
-                this.hitbox.set(this.position.x + 19, this.position.y - 21, (Tile.SIZE * CANVAS_SCALE) + 10, Tile.SIZE * CANVAS_SCALE + 22);
+                this.hitbox.set(this.position.x + 19, this.position.y + 5, TILE_SIZE + 14, TILE_SIZE - 40);
                 break;
             case Direction.Up:
-                this.hitbox.set(this.position.x - 8, this.position.y - 30, (Tile.SIZE * CANVAS_SCALE) + 30, Tile.SIZE * CANVAS_SCALE + 12);
+                this.hitbox.set(this.position.x + 25, this.position.y - 30, TILE_SIZE - 35, TILE_SIZE);
                 break;
         }
 
@@ -60,34 +58,6 @@ export default class Door extends GameObject {
         this.stateMachine.change(ObjectStateName.DoorIdling);
 
         this.isClosed = true;
-    }
-
-    static generateClosedSprite() {
-        const sprites = []
-
-        sprites.push(new Sprite(
-            images.get(ImageName.SpriteSheet),
-            16,
-            220,
-            Door.CLOSED_WIDTH,
-            Door.CLOSED_HEIGHT
-        ));
-        
-        return sprites;
-    }
-
-    static generateOpenedSprite() {
-        const sprites = []
-
-        sprites.push(new Sprite(
-            images.get(ImageName.SpriteSheet),
-            80,
-            220,
-            Door.OPENED_WIDTH,
-            Door.OPENED_HEIGHT
-        ));
-        
-        return sprites;
     }
 
     render() {
@@ -124,11 +94,39 @@ export default class Door extends GameObject {
         return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(Door.SOUTH_DOOR_X, Door.SOUTH_DOOR_Y), Direction.Up);
     }
 
-    static generateEastDoor() {
+    static generateWestDoor() {
         return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(Door.EAST_DOOR_X, Door.EAST_DOOR_Y), Direction.Right);
     }
 
-    static generateWestDoor() {
+    static generateEastDoor() {
         return new Door(new Vector(Door.CLOSED_WIDTH, Door.CLOSED_HEIGHT), new Vector(Door.WEST_DOOR_X, Door.WEST_DOOR_Y), Direction.Left);
+    }
+
+    static generateClosedSprite() {
+        const sprites = []
+
+        sprites.push(new Sprite(
+            images.get(ImageName.SpriteSheet),
+            16,
+            220,
+            Door.CLOSED_WIDTH,
+            Door.CLOSED_HEIGHT
+        ));
+        
+        return sprites;
+    }
+
+    static generateOpenedSprite() {
+        const sprites = []
+
+        sprites.push(new Sprite(
+            images.get(ImageName.SpriteSheet),
+            80,
+            220,
+            Door.OPENED_WIDTH,
+            Door.OPENED_HEIGHT
+        ));
+        
+        return sprites;
     }
 }

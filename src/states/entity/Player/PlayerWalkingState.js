@@ -1,10 +1,9 @@
 import State from "../../../../lib/State.js";
 import Animation from "../../../../lib/Animation.js";
-import { CANVAS_SCALE, keys } from "../../../globals.js";
+import { keys, TILE_SIZE } from "../../../globals.js";
 import Direction from "../../../enums/Direction.js";
 import PlayerStateName from "../../../enums/PlayerStateName.js";
 import Room from "../../../objects/Room.js";
-import Tile from "../../../objects/Tile.js";
 
 export default class PlayerWalkingState extends State {
     constructor(player) {
@@ -26,10 +25,15 @@ export default class PlayerWalkingState extends State {
         }
     }
 
+    /**
+     * Player movement based on room constraints.
+     * @param {Number} dt 
+     */
     handleMovement(dt) {
         let b1 = true;
         let b2 = true;
 
+        // Checks for vertical movement.
         if (keys.w) {
 			this.player.direction = Direction.Up;
 			this.player.position.y -= this.player.speed * dt;
@@ -50,12 +54,13 @@ export default class PlayerWalkingState extends State {
             b1 = false;
         }
 
+        // Checks for horizontal movement.
 		if (keys.a) {
             this.player.faceDirection = Direction.Left;
 			this.player.direction = Direction.Right;
 			this.player.position.x -= this.player.speed * dt;
 
-            if (this.player.position.x <= Room.LEFT_EDGE) {
+            if (this.player.position.x <= Room.LEFT_EDGE - this.player.dimensions.x) {
 				this.player.position.x = Room.LEFT_EDGE - this.player.dimensions.x;
 			}
 
@@ -65,21 +70,22 @@ export default class PlayerWalkingState extends State {
 			this.player.direction = Direction.Left;
 			this.player.position.x += this.player.speed * dt;
 
-            if (this.player.position.x >= Room.RIGHT_EDGE - (Tile.SIZE * CANVAS_SCALE)) {
-				this.player.position.x = Room.RIGHT_EDGE - (Tile.SIZE * CANVAS_SCALE);
+            if (this.player.position.x >= Room.RIGHT_EDGE - TILE_SIZE) {
+				this.player.position.x = Room.RIGHT_EDGE - TILE_SIZE;
 			}
 		}
 		else {
             b2 = false;
 		}
 
+        // Change to idling state if there's no horizontal or vertical movement.
         if (!b1 && !b2) {
             this.player.changeState(PlayerStateName.Idling);
         }
     }
 
     checkForAttack() {
-        if (keys.Enter || keys.Attack) {
+        if (keys.Enter) {
             this.player.changeState(PlayerStateName.Attacking);
         }
     }

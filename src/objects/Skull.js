@@ -1,42 +1,38 @@
-import Animation from "../../lib/Animation.js";
 import Sprite from "../../lib/Sprite.js";
 import StateMachine from "../../lib/StateMachine.js";
+import GameEntity from "../entities/GameEntity.js";
 import ImageName from "../enums/ImageName.js";
 import ObjectStateName from "../enums/ObjectStateName.js";
 import { images } from "../globals.js";
-import LadderIdlingState from "../states/object/LadderIdlingState.js";
-import GameObject from "./GameObject.js";
+import SkullIdlingState from "../states/object/SkullIdlingState.js";
 import Tile from "./Tile.js";
 
-export default class Ladder extends GameObject {
+export default class Skull extends GameEntity {
     static WIDTH = Tile.SIZE;
     static HEIGHT = Tile.SIZE;
-    static NUM_SPRITES = 1;
 
     constructor(dimensions, position) {
         super(dimensions, position);
 
         this.stateMachine = new StateMachine();
-        this.stateMachine.add(ObjectStateName.LadderIdling, new LadderIdlingState(this));
-        this.stateMachine.change(ObjectStateName.LadderIdling);
+        this.stateMachine.add(ObjectStateName.SkullIdling, new SkullIdlingState(this));
+        this.stateMachine.change(ObjectStateName.SkullIdling);
 
-        this.currentAnimation = new Animation([0], 1);
-        this.idlingSprites = Ladder.generateLadderTile();
+        this.idlingSprites = Skull.generateSprites();
         this.sprites = this.idlingSprites;
-        this.isSolid = false;
     }
 
-    static generateLadderTile() {
+    static generateSprites() {
         const sprites = [];
 
         sprites.push(new Sprite(
             images.get(ImageName.SpriteSheet),
-            47,
-            95,
+            287,
+            320,
             Tile.SIZE,
             Tile.SIZE
         ));
-        
+
         return sprites;
     }
 }
